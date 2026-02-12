@@ -101,6 +101,7 @@ TEST(test_hashmap_insert_and_get_single)
     result = HashMap__getItem(map, key, strlen(key), &retrieved);
     ASSERT_EQ(result, 0, "getItem should return 0 on success");
     ASSERT_NOT_NULL(retrieved, "Retrieved value should not be NULL");
+    ASSERT_EQ(*(int *)retrieved, value, "Retrieved value should match stored value");
 
     free(map);
 }
@@ -135,6 +136,7 @@ TEST(test_hashmap_insert_multiple)
                                          &retrieved);
         ASSERT_EQ(result, 0, "getItem should succeed");
         ASSERT_NOT_NULL(retrieved, "Retrieved value should not be NULL");
+        ASSERT_EQ(*(int *)retrieved, values[i], "Retrieved value should match stored value");
     }
 
     free(map);
@@ -162,6 +164,8 @@ TEST(test_hashmap_string_values)
 
     ASSERT_NOT_NULL(retrieved1, "First value should not be NULL");
     ASSERT_NOT_NULL(retrieved2, "Second value should not be NULL");
+    ASSERT_STR_EQ((char *)retrieved1, value1, "First value should match");
+    ASSERT_STR_EQ((char *)retrieved2, value2, "Second value should match");
 
     free(map);
 }
@@ -200,6 +204,7 @@ TEST(test_hashmap_long_key)
     result = HashMap__getItem(map, long_key, strlen(long_key), &retrieved);
     ASSERT_EQ(result, 0, "getItem should find long key");
     ASSERT_NOT_NULL(retrieved, "Retrieved value should not be NULL");
+    ASSERT_EQ(*(int *)retrieved, value, "Retrieved value should match stored value");
 
     free(map);
 }
@@ -274,6 +279,9 @@ TEST(test_hashmap_struct_values)
     void *retrieved1 = NULL;
     HashMap__getItem(map, key1, strlen(key1), &retrieved1);
     ASSERT_NOT_NULL(retrieved1, "Retrieved record should not be NULL");
+    Record *rec_ptr = (Record *)retrieved1;
+    ASSERT_EQ(rec_ptr->id, rec1.id, "Record ID should match");
+    ASSERT(rec_ptr->score == rec1.score, "Record score should match");
 
     free(map);
 }
@@ -297,6 +305,7 @@ TEST(test_hashmap_binary_key)
                               &retrieved);
     ASSERT_EQ(result, 0, "getItem should find binary key");
     ASSERT_NOT_NULL(retrieved, "Retrieved value should not be NULL");
+    ASSERT_EQ(*(int *)retrieved, value, "Retrieved value should match stored value");
 
     free(map);
 }
