@@ -30,7 +30,6 @@ jobs:
 
       - name: Build
         run: |
-          cd build
           cmake --build build --config Release
 
       - name: Run tests
