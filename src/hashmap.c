@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cbarroso/_hash.h>
-#include <cbarroso/_types.h>
+#include <stdint.h>
 #include <cbarroso/hashmap.h>
 #include <stdio.h>
 #include <assert.h>
@@ -14,109 +14,29 @@
 
 #define USABLE_FRACTION(n) (((n) << 1) / 3)
 
-HashMap *HashMap__new(uint8_t log2_size)
-{
-    uint8_t log2_index_bytes = 0;
-    ssize_t usable = USABLE_FRACTION(1 << log2_size);
-
-    size_t indicesSize = (1 << log2_size);
-    size_t entriesSize = sizeof(HashMapEntry) * usable;
-    HashMap *keysObj = malloc(
-        sizeof(HashMap) + indicesSize + indicesSize);
-
-    if (keysObj == NULL)
-    {
-        return NULL;
-    }
-
-    if (log2_size < 8)
-    {
-        log2_index_bytes = log2_size;
-    }
-    else if (log2_size < 16)
-    {
-        log2_index_bytes = log2_size + 1;
-    }
-    else if (log2_size >= 32)
-    {
-        log2_index_bytes = log2_size + 3;
-    }
-    else
-    {
-        log2_index_bytes = log2_size + 2;
-    }
-
-    keysObj->usable = usable;
-    keysObj->nentries = 0;
-    keysObj->log2_size = log2_size;
-    keysObj->log2_index_bytes = log2_index_bytes;
-    // Intialize `indices` as an array of `MKIX_EMPTY`s
-    memset(keysObj->indices, MKIX_EMPTY, (size_t)1 << log2_index_bytes);
-    // Intialize `entries` as an array of nulls
-    memset(&keysObj->indices[(size_t)1 << log2_index_bytes],
-           0,
-           sizeof(HashMap) * usable);
-
-    return keysObj;
-}
-
-int8_t HashMap__setItem(HashMap *self, char *key, size_t keySize, void *value)
-{
-    assert(key);
-    assert(value);
-
-    if (self->usable <= 0)
-    {
-        if (sHashMap__insertionResize(self) < 0)
-        {
-            return -1;
-        }
-    }
-
-    hash_t hash = hashBuffer(key, keySize);
-    ssize_t hashPos = sHashMap__findEmptySlot(self, hash);
-    sHashMap__setIndex(self, hashPos, self->nentries);
-    HashMapEntry *entry = sHashMap__getEntries(self)[self->nentries];
-    entry->hash = hash;
-    entry->key = key;
-    entry->keySize = keySize;
-    entry->value = value;
-    sHashMap__keysEntryAdded(self);
-
-    return 0;
-}
-
-int8_t HashMap__getItem(HashMap *self, char *key, size_t keySize, void **valueAddr)
-{
-    ssize_t index = sHashMap__doLookup(self, key, keySize, hashBuffer(key, keySize));
-    *valueAddr = sHashMap__getEntries(self)[index];
-
-    return 0;
-}
-
 static ssize_t sHashMap__getIndex(HashMap *self, ssize_t maskedHash)
 {
     if (self->log2_size < 8)
     {
-        return ((uint8_t *)self->indices)[maskedHash];
+        return ((int8_t *)self->indices)[maskedHash];
     }
     else if (self->log2_size < 16)
     {
-        return ((uint16_t *)self->indices)[maskedHash];
+        return ((int16_t *)self->indices)[maskedHash];
     }
     else if (self->log2_size >= 32)
     {
-        return ((uint64_t *)self->indices)[maskedHash];
+        return ((int64_t *)self->indices)[maskedHash];
     }
     else
     {
-        return ((uint32_t *)self->indices)[maskedHash];
+        return ((int32_t *)self->indices)[maskedHash];
     }
 }
 
 static HashMapEntry **sHashMap__getEntries(HashMap *self)
 {
-    return (&self->indices[1 << self->log2_index_bytes]);
+    return (HashMapEntry **)(&self->indices[1 << self->log2_index_bytes]);
 }
 
 static size_t sHashMap__getMask(HashMap *self)
@@ -140,16 +60,21 @@ static ssize_t sHashMap__doLookup(HashMap *self, char *key, size_t keySize, hash
 
         if (index >= 0)
         {
-            isSameKey = strncmp(key, entries[index]->key, keySize);
+            isSameKey = strncmp(key, entries[index]->key, keySize) == 0;
         }
 
         perturb >>= PERTURB_SHIFT;
         maskedHash = mask & (maskedHash * 5 + perturb + 1);
 
         shouldStopLoop = index == MKIX_EMPTY || (isSameKey && index >= 0);
-    } while (shouldStopLoop);
+    } while (!shouldStopLoop);
 
     return index;
+}
+
+static uint8_t sIsUnusableSlot(ssize_t index)
+{
+    return index > MKIX_EMPTY;
 }
 
 static ssize_t sHashMap__findEmptySlot(HashMap *self, hash_t hash)
@@ -157,12 +82,14 @@ static ssize_t sHashMap__findEmptySlot(HashMap *self, hash_t hash)
     const size_t mask = sHashMap__getMask(self);
     size_t maskedHash = hash & mask;
     ssize_t index = sHashMap__getIndex(self, maskedHash);
-    for (size_t perturb = hash; is_unusable_slot(index);)
+
+    for (size_t perturb = hash; sIsUnusableSlot(index);)
     {
         perturb >>= PERTURB_SHIFT;
         maskedHash = (maskedHash * 5 + perturb + 1) & mask;
         index = sHashMap__getIndex(self, maskedHash);
     }
+
     return maskedHash;
 }
 
@@ -210,6 +137,18 @@ static ssize_t sHashMap__insertKey(HashMap *self, char *key, size_t keySize, has
     return index;
 }
 
+static uint8_t sHashMap__getNextSize(HashMap *self)
+{
+    ssize_t minsize = self->nentries * 3;
+    uint8_t log2_size;
+
+    for (log2_size = LOG2_MINSIZE;
+         (((ssize_t)1) << log2_size) < minsize;
+         log2_size++)
+        ;
+    return log2_size;
+}
+
 static int8_t sHashMap__insertionResize(HashMap *self)
 {
     uint8_t log2_newsize = sHashMap__getNextSize(self);
@@ -246,6 +185,91 @@ static int8_t sHashMap__insertionResize(HashMap *self)
 
     *self = *newHashMap;
     free(newHashMap);
+
+    return 0;
+}
+
+HashMap *HashMap__new(uint8_t log2_size)
+{
+    uint8_t log2_index_bytes = 0;
+    ssize_t usable = USABLE_FRACTION(1 << log2_size);
+
+    if (log2_size < 8)
+    {
+        log2_index_bytes = log2_size;
+    }
+    else if (log2_size < 16)
+    {
+        log2_index_bytes = log2_size + 1;
+    }
+    else if (log2_size >= 32)
+    {
+        log2_index_bytes = log2_size + 3;
+    }
+    else
+    {
+        log2_index_bytes = log2_size + 2;
+    }
+
+    size_t indicesSize = (size_t)1 << log2_index_bytes;
+    size_t entriesSize = sizeof(HashMapEntry) * usable;
+    HashMap *hashMap = malloc(
+        sizeof(HashMap) + indicesSize + entriesSize);
+
+    if (hashMap == NULL)
+    {
+        return NULL;
+    }
+
+    hashMap->usable = usable;
+    hashMap->nentries = 0;
+    hashMap->log2_size = log2_size;
+    hashMap->log2_index_bytes = log2_index_bytes;
+    // Intialize `indices` as an array of `MKIX_EMPTY`s
+    memset(hashMap->indices, MKIX_EMPTY, (size_t)1 << log2_index_bytes);
+    // Intialize `entries` as an array of nulls
+    memset(&hashMap->indices[(size_t)1 << log2_index_bytes],
+           0,
+           sizeof(HashMap) * usable);
+
+    return hashMap;
+}
+
+int8_t HashMap__setItem(HashMap *self, char *key, size_t keySize, void *value)
+{
+    assert(key);
+    assert(value);
+
+    if (self->usable <= 0)
+    {
+        if (sHashMap__insertionResize(self) < 0)
+        {
+            return -1;
+        }
+    }
+
+    hash_t hash = hashBuffer(key, keySize);
+    ssize_t hashPos = sHashMap__findEmptySlot(self, hash);
+    sHashMap__setIndex(self, hashPos, self->nentries);
+    HashMapEntry **entries = sHashMap__getEntries(self);
+    entries[self->nentries] = malloc(sizeof(HashMapEntry));
+    HashMapEntry *entry = entries[self->nentries];
+    entry->hash = hash;
+    entry->key = key;
+    entry->keySize = keySize;
+    entry->value = value;
+    sHashMap__keysEntryAdded(self);
+
+    return 0;
+}
+
+int8_t HashMap__getItem(HashMap *self,
+                        char *key,
+                        size_t keySize,
+                        void **valueAddr)
+{
+    ssize_t index = sHashMap__doLookup(self, key, keySize, hashBuffer(key, keySize));
+    *valueAddr = sHashMap__getEntries(self)[index]->value;
 
     return 0;
 }

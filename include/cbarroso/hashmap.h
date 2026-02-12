@@ -2,7 +2,7 @@
 #define HASHMAP_H
 
 #include <cbarroso/_hash.h>
-#include <cbarroso/_types.h>
+#include <stdint.h>
 
 #define LOG2_MINSIZE 3
 
@@ -34,6 +34,9 @@ typedef struct HashMapEntry
 
 HashMap *HashMap__new(uint8_t log2_size);
 int8_t HashMap__setItem(HashMap *self, char *key, size_t keySize, void *value);
-int8_t HashMap__getItem(HashMap *self, char *key, size_t keySize, void **valueAddr);
+int8_t HashMap__getItem(HashMap *self,
+                        char *key,
+                        size_t keySize,
+                        void **valueAddr);
 
 #endif

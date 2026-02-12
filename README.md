@@ -30,6 +30,31 @@ cmake --build build
 sudo cmake --install build --prefix /usr/local
 ```
 
+### Running Tests
+
+To build and run the test suite:
+
+```bash
+# Configure with testing enabled
+cmake -B build -DBUILD_TESTING=ON
+
+# Build the library and tests
+cmake --build build
+
+# Run all tests with CTest
+cd build
+ctest --output-on-failure
+
+# Or run the test executable directly
+./test_hashmap
+```
+
+For verbose test output:
+
+```bash
+ctest --output-on-failure --verbose
+```
+
 ## Usage
 
 ### Option 1: Direct Integration (add_subdirectory)
@@ -137,21 +162,6 @@ int main(void) {
 }
 ```
 
-## Project Structure
-
-```
-cbarroso/
-├── CMakeLists.txt           # Main CMake configuration
-├── cmake/
-│   └── cbarrosoConfig.cmake.in  # CMake package config template
-├── include/
-│   └── cbarroso/
-│       ├── hashmap.h        # Public HashMap API
-│       ├── _hash.h          # Hash function declarations
-│       └── _types.h         # Type definitions
-└── src/
-    └── hashmap.c            # HashMap implementation
-```
 
 ## License
 

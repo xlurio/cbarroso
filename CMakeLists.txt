@@ -8,13 +8,15 @@ project(cbarroso
 
 # Option to control library type (for future extensibility)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_TESTING "Build the testing tree" OFF)
 
 # Create the library target
 add_library(cbarroso STATIC)
 
 # Add source files
-target_sources(cbarroso PRIVATE
-    src/hashmap.c
+target_sources(cbarroso
+    PRIVATE src/hashmap.c
+    PRIVATE src/_hash.c
 )
 
 # Set include directories
@@ -59,12 +61,11 @@ write_basic_package_version_file(
     COMPATIBILITY AnyNewerVersion
 )
 
-# Create a Config file
-configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cbarrosoConfig.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cbarrosoConfig.cmake"
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cbarroso
-    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+# Create a simple Config file
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/cbarrosoConfig.cmake"
+"include(CMakeFindDependencyMacro)
+include(\"\${CMAKE_CURRENT_LIST_DIR}/cbarrosoTargets.cmake\")
+"
 )
 
 install(FILES
@@ -72,3 +73,17 @@ install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/cbarrosoConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cbarroso
 )
+
+# Enable testing
+if(BUILD_TESTING)
+    enable_testing()
+
+    # Add test executable (excluded from default build)
+    add_executable(test_hashmap EXCLUDE_FROM_ALL tests/test_hashmap.c)
+
+    # Link test executable with the library
+    target_link_libraries(test_hashmap PRIVATE cbarroso)
+
+    # Add test to CTest
+    add_test(NAME HashMapTests COMMAND test_hashmap)
+endif()
