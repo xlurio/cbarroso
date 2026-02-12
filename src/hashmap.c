@@ -11,7 +11,6 @@
 #define MKIX_DUMMY -2
 #define MKIX_ERROR -3
 #define PERTURB_SHIFT 5
-#define LOG2_MINSIZE 3
 
 #define USABLE_FRACTION(n) (((n) << 1) / 3)
 

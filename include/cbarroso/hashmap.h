@@ -4,6 +4,8 @@
 #include <cbarroso/_hash.h>
 #include <cbarroso/_types.h>
 
+#define LOG2_MINSIZE 3
+
 typedef struct HashMap
 {
     /* $\log_2{size_of_the_index}$ */
