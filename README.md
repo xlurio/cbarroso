@@ -39,7 +39,7 @@ To build and run the test suite:
 cmake -B build -DBUILD_TESTING=ON
 
 # Build the library and tests
-cmake --build build
+cmake --build build --target test_hashmap
 
 # Run all tests with CTest
 cd build

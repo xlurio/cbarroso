@@ -27,15 +27,15 @@ typedef struct HashMap
 typedef struct HashMapEntry
 {
     hash_t hash;
-    char *key;
+    void *key;
     size_t keySize;
     void *value;
 } HashMapEntry;
 
 HashMap *HashMap__new(uint8_t log2_size);
-int8_t HashMap__setItem(HashMap *self, char *key, size_t keySize, void *value);
+int8_t HashMap__setItem(HashMap *self, void *key, size_t keySize, void *value);
 int8_t HashMap__getItem(HashMap *self,
-                        char *key,
+                        void *key,
                         size_t keySize,
                         void **valueAddr);
 

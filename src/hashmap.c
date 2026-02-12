@@ -1,11 +1,11 @@
 #include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
 #include <cbarroso/_hash.h>
 #include <stdint.h>
 #include <cbarroso/hashmap.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #define MKIX_EMPTY -1
 #define MKIX_DUMMY -2
@@ -44,7 +44,7 @@ static size_t sHashMap__getMask(HashMap *self)
     return ((int64_t)1 << self->log2_size) - 1;
 }
 
-static ssize_t sHashMap__doLookup(HashMap *self, char *key, size_t keySize, hash_t hash)
+static ssize_t sHashMap__doLookup(HashMap *self, void *key, size_t keySize, hash_t hash)
 {
     size_t mask = sHashMap__getMask(self);
     size_t maskedHash = (size_t)hash & mask;
@@ -60,7 +60,7 @@ static ssize_t sHashMap__doLookup(HashMap *self, char *key, size_t keySize, hash
 
         if (index >= 0)
         {
-            isSameKey = strncmp(key, entries[index]->key, keySize) == 0;
+            isSameKey = memcmp(key, entries[index]->key, keySize) == 0;
         }
 
         perturb >>= PERTURB_SHIFT;
@@ -121,7 +121,7 @@ static void sHashMap__keysEntryAdded(HashMap *self)
     self->usable--;
 }
 
-static ssize_t sHashMap__insertKey(HashMap *self, char *key, size_t keySize, hash_t hash)
+static ssize_t sHashMap__insertKey(HashMap *self, void *key, size_t keySize, hash_t hash)
 {
     ssize_t index = sHashMap__doLookup(self, key, keySize, hash);
 
@@ -235,7 +235,7 @@ HashMap *HashMap__new(uint8_t log2_size)
     return hashMap;
 }
 
-int8_t HashMap__setItem(HashMap *self, char *key, size_t keySize, void *value)
+int8_t HashMap__setItem(HashMap *self, void *key, size_t keySize, void *value)
 {
     assert(key);
     assert(value);
@@ -264,7 +264,7 @@ int8_t HashMap__setItem(HashMap *self, char *key, size_t keySize, void *value)
 }
 
 int8_t HashMap__getItem(HashMap *self,
-                        char *key,
+                        void *key,
                         size_t keySize,
                         void **valueAddr)
 {

@@ -295,17 +295,271 @@ TEST(test_hashmap_binary_key)
     unsigned char binary_key[] = {0x01, 0x02, 0x03, 0x04};
     int value = 777;
 
-    int8_t result = HashMap__setItem(map, (char *)binary_key, sizeof(binary_key), &value);
+    int8_t result = HashMap__setItem(map, binary_key, sizeof(binary_key), &value);
     ASSERT_EQ(result, 0, "setItem should handle binary key");
 
     void *retrieved = NULL;
     result = HashMap__getItem(map,
-                              (char *)binary_key,
+                              binary_key,
                               sizeof(binary_key),
                               &retrieved);
     ASSERT_EQ(result, 0, "getItem should find binary key");
     ASSERT_NOT_NULL(retrieved, "Retrieved value should not be NULL");
     ASSERT_EQ(*(int *)retrieved, value, "Retrieved value should match stored value");
+
+    free(map);
+}
+
+// Test: Integer key (using int as key)
+TEST(test_hashmap_integer_key)
+{
+    HashMap *map = HashMap__new(LOG2_MINSIZE);
+    ASSERT_NOT_NULL(map, "HashMap should not be NULL");
+
+    int key1 = 42;
+    int key2 = 100;
+    int key3 = -55;
+    char *value1 = "Answer";
+    char *value2 = "Century";
+    char *value3 = "Negative";
+
+    int8_t result = HashMap__setItem(map, &key1, sizeof(int), value1);
+    ASSERT_EQ(result, 0, "setItem should handle integer key");
+    
+    result = HashMap__setItem(map, &key2, sizeof(int), value2);
+    ASSERT_EQ(result, 0, "setItem should handle integer key");
+    
+    result = HashMap__setItem(map, &key3, sizeof(int), value3);
+    ASSERT_EQ(result, 0, "setItem should handle integer key");
+
+    void *retrieved = NULL;
+    result = HashMap__getItem(map, &key1, sizeof(int), &retrieved);
+    ASSERT_EQ(result, 0, "getItem should find integer key");
+    ASSERT_STR_EQ((char *)retrieved, value1, "Retrieved value should match");
+
+    retrieved = NULL;
+    result = HashMap__getItem(map, &key2, sizeof(int), &retrieved);
+    ASSERT_EQ(result, 0, "getItem should find integer key");
+    ASSERT_STR_EQ((char *)retrieved, value2, "Retrieved value should match");
+
+    retrieved = NULL;
+    result = HashMap__getItem(map, &key3, sizeof(int), &retrieved);
+    ASSERT_EQ(result, 0, "getItem should find integer key");
+    ASSERT_STR_EQ((char *)retrieved, value3, "Retrieved value should match");
+
+    free(map);
+}
+
+// Test: Float key (using float as key)
+TEST(test_hashmap_float_key)
+{
+    HashMap *map = HashMap__new(LOG2_MINSIZE);
+    ASSERT_NOT_NULL(map, "HashMap should not be NULL");
+
+    float key1 = 3.14159f;
+    float key2 = 2.71828f;
+    int value1 = 314;
+    int value2 = 271;
+
+    int8_t result = HashMap__setItem(map, &key1, sizeof(float), &value1);
+    ASSERT_EQ(result, 0, "setItem should handle float key");
+    
+    result = HashMap__setItem(map, &key2, sizeof(float), &value2);
+    ASSERT_EQ(result, 0, "setItem should handle float key");
+
+    void *retrieved = NULL;
+    result = HashMap__getItem(map, &key1, sizeof(float), &retrieved);
+    ASSERT_EQ(result, 0, "getItem should find float key");
+    ASSERT_EQ(*(int *)retrieved, value1, "Retrieved value should match");
+
+    retrieved = NULL;
+    result = HashMap__getItem(map, &key2, sizeof(float), &retrieved);
+    ASSERT_EQ(result, 0, "getItem should find float key");
+    ASSERT_EQ(*(int *)retrieved, value2, "Retrieved value should match");
+
+    free(map);
+}
+
+// Test: Struct key (using custom struct as key)
+TEST(test_hashmap_struct_key)
+{
+    typedef struct {
+        int x;
+        int y;
+    } Point;
+
+    HashMap *map = HashMap__new(LOG2_MINSIZE);
+    ASSERT_NOT_NULL(map, "HashMap should not be NULL");
+
+    Point key1 = {10, 20};
+    Point key2 = {30, 40};
+    Point key3 = {10, 20}; // Same as key1
+    
+    char *value1 = "Origin Area";
+    char *value2 = "Far Corner";
+
+    int8_t result = HashMap__setItem(map, &key1, sizeof(Point), value1);
+    ASSERT_EQ(result, 0, "setItem should handle struct key");
+    
+    result = HashMap__setItem(map, &key2, sizeof(Point), value2);
+    ASSERT_EQ(result, 0, "setItem should handle struct key");
+
+    void *retrieved = NULL;
+    result = HashMap__getItem(map, &key1, sizeof(Point), &retrieved);
+    ASSERT_EQ(result, 0, "getItem should find struct key");
+    ASSERT_STR_EQ((char *)retrieved, value1, "Retrieved value should match");
+
+    // Test with same content as key1
+    retrieved = NULL;
+    result = HashMap__getItem(map, &key3, sizeof(Point), &retrieved);
+    ASSERT_EQ(result, 0, "getItem should find identical struct key");
+    ASSERT_STR_EQ((char *)retrieved, value1, "Retrieved value should match for identical struct");
+
+    free(map);
+}
+
+// Test: Multiple data type keys in same map
+TEST(test_hashmap_mixed_key_types)
+{
+    HashMap *map = HashMap__new(LOG2_MINSIZE);
+    ASSERT_NOT_NULL(map, "HashMap should not be NULL");
+
+    // Different key types (note: in real usage, you'd typically use one key type per map)
+    int int_key = 123;
+    float float_key = 4.56f;
+    char str_key[] = "text_key";
+    unsigned char bin_key[] = {0xAA, 0xBB, 0xCC};
+
+    int value1 = 1000;
+    int value2 = 2000;
+    int value3 = 3000;
+    int value4 = 4000;
+
+    // Insert with different key types and sizes
+    HashMap__setItem(map, &int_key, sizeof(int), &value1);
+    HashMap__setItem(map, &float_key, sizeof(float), &value2);
+    HashMap__setItem(map, str_key, strlen(str_key), &value3);
+    HashMap__setItem(map, bin_key, sizeof(bin_key), &value4);
+
+    ASSERT_EQ(map->nentries, 4, "Should have 4 entries");
+
+    // Retrieve all
+    void *retrieved = NULL;
+    HashMap__getItem(map, &int_key, sizeof(int), &retrieved);
+    ASSERT_EQ(*(int *)retrieved, value1, "Integer key retrieval should work");
+
+    retrieved = NULL;
+    HashMap__getItem(map, &float_key, sizeof(float), &retrieved);
+    ASSERT_EQ(*(int *)retrieved, value2, "Float key retrieval should work");
+
+    retrieved = NULL;
+    HashMap__getItem(map, str_key, strlen(str_key), &retrieved);
+    ASSERT_EQ(*(int *)retrieved, value3, "String key retrieval should work");
+
+    retrieved = NULL;
+    HashMap__getItem(map, bin_key, sizeof(bin_key), &retrieved);
+    ASSERT_EQ(*(int *)retrieved, value4, "Binary key retrieval should work");
+
+    free(map);
+}
+
+// Test: Long integer key (64-bit)
+TEST(test_hashmap_long_integer_key)
+{
+    HashMap *map = HashMap__new(LOG2_MINSIZE);
+    ASSERT_NOT_NULL(map, "HashMap should not be NULL");
+
+    int64_t key1 = 9223372036854775807LL; // Max int64
+    int64_t key2 = -9223372036854775807LL; // Min int64 + 1
+    int64_t key3 = 0LL;
+
+    double value1 = 1.1;
+    double value2 = 2.2;
+    double value3 = 3.3;
+
+    HashMap__setItem(map, &key1, sizeof(int64_t), &value1);
+    HashMap__setItem(map, &key2, sizeof(int64_t), &value2);
+    HashMap__setItem(map, &key3, sizeof(int64_t), &value3);
+
+    void *retrieved = NULL;
+    HashMap__getItem(map, &key1, sizeof(int64_t), &retrieved);
+    ASSERT(*(double *)retrieved == value1, "Long integer key should work");
+
+    retrieved = NULL;
+    HashMap__getItem(map, &key2, sizeof(int64_t), &retrieved);
+    ASSERT(*(double *)retrieved == value2, "Negative long integer key should work");
+
+    retrieved = NULL;
+    HashMap__getItem(map, &key3, sizeof(int64_t), &retrieved);
+    ASSERT(*(double *)retrieved == value3, "Zero long integer key should work");
+
+    free(map);
+}
+
+// Test: Complex binary data as key
+TEST(test_hashmap_complex_binary_key)
+{
+    HashMap *map = HashMap__new(LOG2_MINSIZE);
+    ASSERT_NOT_NULL(map, "HashMap should not be NULL");
+
+    // Simulate complex binary data like a hash or UUID
+    unsigned char key1[16] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0,
+                              0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
+    unsigned char key2[16] = {0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA, 0x99, 0x88,
+                              0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00};
+    
+    char *value1 = "UUID-like key 1";
+    char *value2 = "UUID-like key 2";
+
+    int8_t result = HashMap__setItem(map, key1, sizeof(key1), value1);
+    ASSERT_EQ(result, 0, "setItem should handle complex binary key");
+    
+    result = HashMap__setItem(map, key2, sizeof(key2), value2);
+    ASSERT_EQ(result, 0, "setItem should handle complex binary key");
+
+    void *retrieved = NULL;
+    result = HashMap__getItem(map, key1, sizeof(key1), &retrieved);
+    ASSERT_EQ(result, 0, "getItem should find complex binary key");
+    ASSERT_STR_EQ((char *)retrieved, value1, "Retrieved value should match");
+
+    retrieved = NULL;
+    result = HashMap__getItem(map, key2, sizeof(key2), &retrieved);
+    ASSERT_EQ(result, 0, "getItem should find complex binary key");
+    ASSERT_STR_EQ((char *)retrieved, value2, "Retrieved value should match");
+
+    free(map);
+}
+
+// Test: Pointer as key (using memory address)
+TEST(test_hashmap_pointer_key)
+{
+    HashMap *map = HashMap__new(LOG2_MINSIZE);
+    ASSERT_NOT_NULL(map, "HashMap should not be NULL");
+
+    int obj1 = 111;
+    int obj2 = 222;
+    int obj3 = 333;
+    
+    void *key1 = &obj1;
+    void *key2 = &obj2;
+    void *key3 = &obj3;
+
+    char *value1 = "Object 1";
+    char *value2 = "Object 2";
+    char *value3 = "Object 3";
+
+    // Use pointer address as key
+    HashMap__setItem(map, &key1, sizeof(void *), value1);
+    HashMap__setItem(map, &key2, sizeof(void *), value2);
+    HashMap__setItem(map, &key3, sizeof(void *), value3);
+
+    void *retrieved = NULL;
+    HashMap__getItem(map, &key1, sizeof(void *), &retrieved);
+    ASSERT_STR_EQ((char *)retrieved, value1, "Pointer key should work");
+
+    retrieved = NULL;
+    HashMap__getItem(map, &key2, sizeof(void *), &retrieved);
+    ASSERT_STR_EQ((char *)retrieved, value2, "Pointer key should work");
 
     free(map);
 }
@@ -325,6 +579,15 @@ int main(int argc, char **argv)
     RUN_TEST(test_hashmap_large_insertions);
     RUN_TEST(test_hashmap_struct_values);
     RUN_TEST(test_hashmap_binary_key);
+    
+    // Tests for void* key functionality
+    RUN_TEST(test_hashmap_integer_key);
+    RUN_TEST(test_hashmap_float_key);
+    RUN_TEST(test_hashmap_struct_key);
+    RUN_TEST(test_hashmap_mixed_key_types);
+    RUN_TEST(test_hashmap_long_integer_key);
+    RUN_TEST(test_hashmap_complex_binary_key);
+    RUN_TEST(test_hashmap_pointer_key);
 
     printf("\n=== Test Results ===\n");
     printf("Tests run: %d\n", tests_run);
