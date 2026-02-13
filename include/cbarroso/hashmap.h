@@ -28,8 +28,10 @@ typedef struct HashMapEntry
 {
     hash_t hash;
     void *key;
+    /* The size of the key buffer in bytes */
     size_t keySize;
     void *value;
+    /* The size of the value buffer in bytes */
     size_t valueSize;
 } HashMapEntry;
 

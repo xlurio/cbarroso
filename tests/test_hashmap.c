@@ -93,12 +93,12 @@ TEST(test_hashmap_insert_and_get_single)
     char *key = "test_key";
     int value = 42;
 
-    int8_t result = HashMap__setItem(map, key, strlen(key), &value, sizeof(int));
+    int8_t result = HashMap__setItem(map, key, strlen(key) + 1, &value, sizeof(int));
     ASSERT_EQ(result, 0, "setItem should return 0 on success");
     ASSERT_EQ(map->nentries, 1, "nentries should be 1 after insert");
 
     void *retrieved = NULL;
-    result = HashMap__getItem(map, key, strlen(key), &retrieved);
+    result = HashMap__getItem(map, key, strlen(key) + 1, &retrieved);
     ASSERT_EQ(result, 0, "getItem should return 0 on success");
     ASSERT_NOT_NULL(retrieved, "Retrieved value should not be NULL");
     ASSERT_EQ(*(int *)retrieved, value, "Retrieved value should match stored value");
@@ -120,7 +120,7 @@ TEST(test_hashmap_insert_multiple)
     {
         values[i] = i * 100;
         snprintf(keys[i], 20, "key_%d", i);
-        int8_t result = HashMap__setItem(map, keys[i], strlen(keys[i]), &values[i], sizeof(int));
+        int8_t result = HashMap__setItem(map, keys[i], strlen(keys[i]) + 1, &values[i], sizeof(int));
         ASSERT_EQ(result, 0, "setItem should succeed");
     }
 
@@ -131,9 +131,9 @@ TEST(test_hashmap_insert_multiple)
     {
         void *retrieved = NULL;
         int8_t result = HashMap__getItem(map,
-                                         keys[i],
-                                         strlen(keys[i]),
-                                         &retrieved);
+                         keys[i],
+                         strlen(keys[i]) + 1,
+                         &retrieved);
         ASSERT_EQ(result, 0, "getItem should succeed");
         ASSERT_NOT_NULL(retrieved, "Retrieved value should not be NULL");
         ASSERT_EQ(*(int *)retrieved, values[i], "Retrieved value should match stored value");
@@ -153,14 +153,14 @@ TEST(test_hashmap_string_values)
     char *key2 = "city";
     char *value2 = "New York";
 
-    HashMap__setItem(map, key1, strlen(key1), value1, strlen(value1) + 1);
-    HashMap__setItem(map, key2, strlen(key2), value2, strlen(value2) + 1);
+    HashMap__setItem(map, key1, strlen(key1) + 1, value1, strlen(value1) + 1);
+    HashMap__setItem(map, key2, strlen(key2) + 1, value2, strlen(value2) + 1);
 
     void *retrieved1 = NULL;
     void *retrieved2 = NULL;
 
-    HashMap__getItem(map, key1, strlen(key1), &retrieved1);
-    HashMap__getItem(map, key2, strlen(key2), &retrieved2);
+    HashMap__getItem(map, key1, strlen(key1) + 1, &retrieved1);
+    HashMap__getItem(map, key2, strlen(key2) + 1, &retrieved2);
 
     ASSERT_NOT_NULL(retrieved1, "First value should not be NULL");
     ASSERT_NOT_NULL(retrieved2, "Second value should not be NULL");
@@ -179,7 +179,7 @@ TEST(test_hashmap_empty_key)
     char *key = "";
     int value = 100;
 
-    int8_t result = HashMap__setItem(map, key, strlen(key), &value, sizeof(int));
+    int8_t result = HashMap__setItem(map, key, strlen(key) + 1, &value, sizeof(int));
     ASSERT_EQ(result, 0, "setItem should handle empty key");
 
     free(map);
@@ -197,11 +197,11 @@ TEST(test_hashmap_long_key)
 
     int value = 999;
 
-    int8_t result = HashMap__setItem(map, long_key, strlen(long_key), &value, sizeof(int));
+    int8_t result = HashMap__setItem(map, long_key, sizeof(long_key), &value, sizeof(int));
     ASSERT_EQ(result, 0, "setItem should handle long key");
 
     void *retrieved = NULL;
-    result = HashMap__getItem(map, long_key, strlen(long_key), &retrieved);
+    result = HashMap__getItem(map, long_key, sizeof(long_key), &retrieved);
     ASSERT_EQ(result, 0, "getItem should find long key");
     ASSERT_NOT_NULL(retrieved, "Retrieved value should not be NULL");
     ASSERT_EQ(*(int *)retrieved, value, "Retrieved value should match stored value");
@@ -219,10 +219,10 @@ TEST(test_hashmap_update_value)
     int value1 = 10;
     int value2 = 20;
 
-    HashMap__setItem(map, key, strlen(key), &value1, sizeof(int));
+    HashMap__setItem(map, key, strlen(key) + 1, &value1, sizeof(int));
     int nentries_after_first = map->nentries;
 
-    HashMap__setItem(map, key, strlen(key), &value2, sizeof(int));
+    HashMap__setItem(map, key, strlen(key) + 1, &value2, sizeof(int));
     // This test documents the expected behavior
     ASSERT(map->nentries >= nentries_after_first,
            "nentries should not decrease after update");
@@ -244,7 +244,7 @@ TEST(test_hashmap_large_insertions)
     {
         values[i] = i;
         snprintf(keys[i], 30, "key_number_%d", i);
-        int8_t result = HashMap__setItem(map, keys[i], strlen(keys[i]), &values[i], sizeof(int));
+        int8_t result = HashMap__setItem(map, keys[i], strlen(keys[i]) + 1, &values[i], sizeof(int));
         ASSERT_EQ(result, 0, "setItem should succeed for large insertion");
     }
 
@@ -271,11 +271,11 @@ TEST(test_hashmap_struct_values)
     char *key1 = "student1";
     char *key2 = "student2";
 
-    HashMap__setItem(map, key1, strlen(key1), &rec1, sizeof(rec1));
-    HashMap__setItem(map, key2, strlen(key2), &rec2, sizeof(rec2));
+    HashMap__setItem(map, key1, strlen(key1) + 1, &rec1, sizeof(rec1));
+    HashMap__setItem(map, key2, strlen(key2) + 1, &rec2, sizeof(rec2));
 
     void *retrieved1 = NULL;
-    HashMap__getItem(map, key1, strlen(key1), &retrieved1);
+    HashMap__getItem(map, key1, strlen(key1) + 1, &retrieved1);
     ASSERT_NOT_NULL(retrieved1, "Retrieved record should not be NULL");
     Record *rec_ptr = (Record *)retrieved1;
     ASSERT_EQ(rec_ptr->id, rec1.id, "Record ID should match");
@@ -441,7 +441,7 @@ TEST(test_hashmap_mixed_key_types)
     // Insert with different key types and sizes
     HashMap__setItem(map, &int_key, sizeof(int), &value1, sizeof(int));
     HashMap__setItem(map, &float_key, sizeof(float), &value2, sizeof(int));
-    HashMap__setItem(map, str_key, strlen(str_key), &value3, sizeof(int));
+    HashMap__setItem(map, str_key, strlen(str_key) + 1, &value3, sizeof(int));
     HashMap__setItem(map, bin_key, sizeof(bin_key), &value4, sizeof(int));
 
     ASSERT_EQ(map->nentries, 4, "Should have 4 entries");
@@ -456,7 +456,7 @@ TEST(test_hashmap_mixed_key_types)
     ASSERT_EQ(*(int *)retrieved, value2, "Float key retrieval should work");
 
     retrieved = NULL;
-    HashMap__getItem(map, str_key, strlen(str_key), &retrieved);
+    HashMap__getItem(map, str_key, strlen(str_key) + 1, &retrieved);
     ASSERT_EQ(*(int *)retrieved, value3, "String key retrieval should work");
 
     retrieved = NULL;
