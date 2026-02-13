@@ -34,7 +34,7 @@ static ssize_t sHashMap__getIndex(HashMap *self, ssize_t maskedHash)
     }
 }
 
-static HashMapEntry **sHashMap__getEntries(HashMap *self)
+HashMapEntry **HashMap__getEntries(HashMap *self)
 {
     return (HashMapEntry **)(&self->indices[1 << self->log2_index_bytes]);
 }
@@ -51,7 +51,7 @@ static ssize_t sHashMap__doLookup(HashMap *self, void *key, size_t keySize, hash
     size_t perturb = hash;
     ssize_t index = MKIX_DUMMY;
     uint8_t isSameKey = 0;
-    HashMapEntry **entries = sHashMap__getEntries(self);
+    HashMapEntry **entries = HashMap__getEntries(self);
     uint8_t shouldStopLoop = 0;
 
     do
@@ -60,7 +60,8 @@ static ssize_t sHashMap__doLookup(HashMap *self, void *key, size_t keySize, hash
 
         if (index >= 0)
         {
-            isSameKey = memcmp(key, entries[index]->key, keySize) == 0;
+            uint8_t isSameSize = (entries[index]->keySize == keySize);
+            isSameKey = isSameSize && memcmp(key, entries[index]->key, keySize) == 0;
         }
 
         perturb >>= PERTURB_SHIFT;
@@ -169,7 +170,7 @@ static int8_t sHashMap__insertionResize(HashMap *self)
     }
 
     assert(newHashMap->usable > self->nentries);
-    HashMapEntry **entries = sHashMap__getEntries(self);
+    HashMapEntry **entries = HashMap__getEntries(self);
     ssize_t index = 0;
 
     for (int entryIndex = 0; entryIndex < self->nentries; entryIndex++)
@@ -251,7 +252,7 @@ int8_t HashMap__setItem(HashMap *self, void *key, size_t keySize, void *value)
     hash_t hash = hashBuffer(key, keySize);
     ssize_t hashPos = sHashMap__findEmptySlot(self, hash);
     sHashMap__setIndex(self, hashPos, self->nentries);
-    HashMapEntry **entries = sHashMap__getEntries(self);
+    HashMapEntry **entries = HashMap__getEntries(self);
     entries[self->nentries] = malloc(sizeof(HashMapEntry));
     HashMapEntry *entry = entries[self->nentries];
     entry->hash = hash;
@@ -269,7 +270,7 @@ int8_t HashMap__getItem(HashMap *self,
                         void **valueAddr)
 {
     ssize_t index = sHashMap__doLookup(self, key, keySize, hashBuffer(key, keySize));
-    *valueAddr = sHashMap__getEntries(self)[index]->value;
+    *valueAddr = HashMap__getEntries(self)[index]->value;
 
     return 0;
 }

@@ -33,6 +33,7 @@ typedef struct HashMapEntry
 } HashMapEntry;
 
 HashMap *HashMap__new(uint8_t log2_size);
+HashMapEntry **HashMap__getEntries(HashMap *self);
 int8_t HashMap__setItem(HashMap *self, void *key, size_t keySize, void *value);
 int8_t HashMap__getItem(HashMap *self,
                         void *key,
