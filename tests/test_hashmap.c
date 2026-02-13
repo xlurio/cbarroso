@@ -93,7 +93,7 @@ TEST(test_hashmap_insert_and_get_single)
     char *key = "test_key";
     int value = 42;
 
-    int8_t result = HashMap__setItem(map, key, strlen(key), &value);
+    int8_t result = HashMap__setItem(map, key, strlen(key), &value, sizeof(int));
     ASSERT_EQ(result, 0, "setItem should return 0 on success");
     ASSERT_EQ(map->nentries, 1, "nentries should be 1 after insert");
 
@@ -120,7 +120,7 @@ TEST(test_hashmap_insert_multiple)
     {
         values[i] = i * 100;
         snprintf(keys[i], 20, "key_%d", i);
-        int8_t result = HashMap__setItem(map, keys[i], strlen(keys[i]), &values[i]);
+        int8_t result = HashMap__setItem(map, keys[i], strlen(keys[i]), &values[i], sizeof(int));
         ASSERT_EQ(result, 0, "setItem should succeed");
     }
 
@@ -153,8 +153,8 @@ TEST(test_hashmap_string_values)
     char *key2 = "city";
     char *value2 = "New York";
 
-    HashMap__setItem(map, key1, strlen(key1), value1);
-    HashMap__setItem(map, key2, strlen(key2), value2);
+    HashMap__setItem(map, key1, strlen(key1), value1, strlen(value1) + 1);
+    HashMap__setItem(map, key2, strlen(key2), value2, strlen(value2) + 1);
 
     void *retrieved1 = NULL;
     void *retrieved2 = NULL;
@@ -179,7 +179,7 @@ TEST(test_hashmap_empty_key)
     char *key = "";
     int value = 100;
 
-    int8_t result = HashMap__setItem(map, key, strlen(key), &value);
+    int8_t result = HashMap__setItem(map, key, strlen(key), &value, sizeof(int));
     ASSERT_EQ(result, 0, "setItem should handle empty key");
 
     free(map);
@@ -197,7 +197,7 @@ TEST(test_hashmap_long_key)
 
     int value = 999;
 
-    int8_t result = HashMap__setItem(map, long_key, strlen(long_key), &value);
+    int8_t result = HashMap__setItem(map, long_key, strlen(long_key), &value, sizeof(int));
     ASSERT_EQ(result, 0, "setItem should handle long key");
 
     void *retrieved = NULL;
@@ -219,12 +219,10 @@ TEST(test_hashmap_update_value)
     int value1 = 10;
     int value2 = 20;
 
-    HashMap__setItem(map, key, strlen(key), &value1);
+    HashMap__setItem(map, key, strlen(key), &value1, sizeof(int));
     int nentries_after_first = map->nentries;
 
-    HashMap__setItem(map, key, strlen(key), &value2);
-
-    // Note: The current implementation might not handle updates properly
+    HashMap__setItem(map, key, strlen(key), &value2, sizeof(int));
     // This test documents the expected behavior
     ASSERT(map->nentries >= nentries_after_first,
            "nentries should not decrease after update");
@@ -246,7 +244,7 @@ TEST(test_hashmap_large_insertions)
     {
         values[i] = i;
         snprintf(keys[i], 30, "key_number_%d", i);
-        int8_t result = HashMap__setItem(map, keys[i], strlen(keys[i]), &values[i]);
+        int8_t result = HashMap__setItem(map, keys[i], strlen(keys[i]), &values[i], sizeof(int));
         ASSERT_EQ(result, 0, "setItem should succeed for large insertion");
     }
 
@@ -273,8 +271,8 @@ TEST(test_hashmap_struct_values)
     char *key1 = "student1";
     char *key2 = "student2";
 
-    HashMap__setItem(map, key1, strlen(key1), &rec1);
-    HashMap__setItem(map, key2, strlen(key2), &rec2);
+    HashMap__setItem(map, key1, strlen(key1), &rec1, sizeof(rec1));
+    HashMap__setItem(map, key2, strlen(key2), &rec2, sizeof(rec2));
 
     void *retrieved1 = NULL;
     HashMap__getItem(map, key1, strlen(key1), &retrieved1);
@@ -295,7 +293,7 @@ TEST(test_hashmap_binary_key)
     unsigned char binary_key[] = {0x01, 0x02, 0x03, 0x04};
     int value = 777;
 
-    int8_t result = HashMap__setItem(map, binary_key, sizeof(binary_key), &value);
+    int8_t result = HashMap__setItem(map, binary_key, sizeof(binary_key), &value, sizeof(int));
     ASSERT_EQ(result, 0, "setItem should handle binary key");
 
     void *retrieved = NULL;
@@ -323,13 +321,13 @@ TEST(test_hashmap_integer_key)
     char *value2 = "Century";
     char *value3 = "Negative";
 
-    int8_t result = HashMap__setItem(map, &key1, sizeof(int), value1);
+    int8_t result = HashMap__setItem(map, &key1, sizeof(int), value1, strlen(value1) + 1);
     ASSERT_EQ(result, 0, "setItem should handle integer key");
-    
-    result = HashMap__setItem(map, &key2, sizeof(int), value2);
+
+    result = HashMap__setItem(map, &key2, sizeof(int), value2, strlen(value2) + 1);
     ASSERT_EQ(result, 0, "setItem should handle integer key");
-    
-    result = HashMap__setItem(map, &key3, sizeof(int), value3);
+
+    result = HashMap__setItem(map, &key3, sizeof(int), value3, strlen(value3) + 1);
     ASSERT_EQ(result, 0, "setItem should handle integer key");
 
     void *retrieved = NULL;
@@ -361,10 +359,10 @@ TEST(test_hashmap_float_key)
     int value1 = 314;
     int value2 = 271;
 
-    int8_t result = HashMap__setItem(map, &key1, sizeof(float), &value1);
+    int8_t result = HashMap__setItem(map, &key1, sizeof(float), &value1, sizeof(int));
     ASSERT_EQ(result, 0, "setItem should handle float key");
-    
-    result = HashMap__setItem(map, &key2, sizeof(float), &value2);
+
+    result = HashMap__setItem(map, &key2, sizeof(float), &value2, sizeof(int));
     ASSERT_EQ(result, 0, "setItem should handle float key");
 
     void *retrieved = NULL;
@@ -383,7 +381,8 @@ TEST(test_hashmap_float_key)
 // Test: Struct key (using custom struct as key)
 TEST(test_hashmap_struct_key)
 {
-    typedef struct {
+    typedef struct
+    {
         int x;
         int y;
     } Point;
@@ -394,14 +393,18 @@ TEST(test_hashmap_struct_key)
     Point key1 = {10, 20};
     Point key2 = {30, 40};
     Point key3 = {10, 20}; // Same as key1
-    
+
     char *value1 = "Origin Area";
     char *value2 = "Far Corner";
 
-    int8_t result = HashMap__setItem(map, &key1, sizeof(Point), value1);
+    int8_t result = HashMap__setItem(map,
+                                     &key1,
+                                     sizeof(Point),
+                                     value1,
+                                     strlen(value1) + 1);
     ASSERT_EQ(result, 0, "setItem should handle struct key");
-    
-    result = HashMap__setItem(map, &key2, sizeof(Point), value2);
+
+    result = HashMap__setItem(map, &key2, sizeof(Point), value2, strlen(value2) + 1);
     ASSERT_EQ(result, 0, "setItem should handle struct key");
 
     void *retrieved = NULL;
@@ -436,10 +439,10 @@ TEST(test_hashmap_mixed_key_types)
     int value4 = 4000;
 
     // Insert with different key types and sizes
-    HashMap__setItem(map, &int_key, sizeof(int), &value1);
-    HashMap__setItem(map, &float_key, sizeof(float), &value2);
-    HashMap__setItem(map, str_key, strlen(str_key), &value3);
-    HashMap__setItem(map, bin_key, sizeof(bin_key), &value4);
+    HashMap__setItem(map, &int_key, sizeof(int), &value1, sizeof(int));
+    HashMap__setItem(map, &float_key, sizeof(float), &value2, sizeof(int));
+    HashMap__setItem(map, str_key, strlen(str_key), &value3, sizeof(int));
+    HashMap__setItem(map, bin_key, sizeof(bin_key), &value4, sizeof(int));
 
     ASSERT_EQ(map->nentries, 4, "Should have 4 entries");
 
@@ -469,7 +472,7 @@ TEST(test_hashmap_long_integer_key)
     HashMap *map = HashMap__new(LOG2_MINSIZE);
     ASSERT_NOT_NULL(map, "HashMap should not be NULL");
 
-    int64_t key1 = 9223372036854775807LL; // Max int64
+    int64_t key1 = 9223372036854775807LL;  // Max int64
     int64_t key2 = -9223372036854775807LL; // Min int64 + 1
     int64_t key3 = 0LL;
 
@@ -477,9 +480,9 @@ TEST(test_hashmap_long_integer_key)
     double value2 = 2.2;
     double value3 = 3.3;
 
-    HashMap__setItem(map, &key1, sizeof(int64_t), &value1);
-    HashMap__setItem(map, &key2, sizeof(int64_t), &value2);
-    HashMap__setItem(map, &key3, sizeof(int64_t), &value3);
+    HashMap__setItem(map, &key1, sizeof(int64_t), &value1, sizeof(double));
+    HashMap__setItem(map, &key2, sizeof(int64_t), &value2, sizeof(double));
+    HashMap__setItem(map, &key3, sizeof(int64_t), &value3, sizeof(double));
 
     void *retrieved = NULL;
     HashMap__getItem(map, &key1, sizeof(int64_t), &retrieved);
@@ -507,14 +510,14 @@ TEST(test_hashmap_complex_binary_key)
                               0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
     unsigned char key2[16] = {0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA, 0x99, 0x88,
                               0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00};
-    
+
     char *value1 = "UUID-like key 1";
     char *value2 = "UUID-like key 2";
 
-    int8_t result = HashMap__setItem(map, key1, sizeof(key1), value1);
+    int8_t result = HashMap__setItem(map, key1, sizeof(key1), value1, strlen(value1) + 1);
     ASSERT_EQ(result, 0, "setItem should handle complex binary key");
-    
-    result = HashMap__setItem(map, key2, sizeof(key2), value2);
+
+    result = HashMap__setItem(map, key2, sizeof(key2), value2, strlen(value2) + 1);
     ASSERT_EQ(result, 0, "setItem should handle complex binary key");
 
     void *retrieved = NULL;
@@ -539,7 +542,7 @@ TEST(test_hashmap_pointer_key)
     int obj1 = 111;
     int obj2 = 222;
     int obj3 = 333;
-    
+
     void *key1 = &obj1;
     void *key2 = &obj2;
     void *key3 = &obj3;
@@ -549,9 +552,9 @@ TEST(test_hashmap_pointer_key)
     char *value3 = "Object 3";
 
     // Use pointer address as key
-    HashMap__setItem(map, &key1, sizeof(void *), value1);
-    HashMap__setItem(map, &key2, sizeof(void *), value2);
-    HashMap__setItem(map, &key3, sizeof(void *), value3);
+    HashMap__setItem(map, &key1, sizeof(void *), value1, strlen(value1) + 1);
+    HashMap__setItem(map, &key2, sizeof(void *), value2, strlen(value2) + 1);
+    HashMap__setItem(map, &key3, sizeof(void *), value3, strlen(value3) + 1);
 
     void *retrieved = NULL;
     HashMap__getItem(map, &key1, sizeof(void *), &retrieved);
@@ -579,7 +582,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_hashmap_large_insertions);
     RUN_TEST(test_hashmap_struct_values);
     RUN_TEST(test_hashmap_binary_key);
-    
+
     // Tests for void* key functionality
     RUN_TEST(test_hashmap_integer_key);
     RUN_TEST(test_hashmap_float_key);

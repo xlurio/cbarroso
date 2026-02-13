@@ -180,7 +180,8 @@ static int8_t sHashMap__insertionResize(HashMap *self)
             HashMap__setItem(newHashMap,
                              entries[entryIndex]->key,
                              entries[entryIndex]->keySize,
-                             entries[entryIndex]->value);
+                             entries[entryIndex]->value,
+                             entries[entryIndex]->valueSize);
         }
     }
 
@@ -236,7 +237,11 @@ HashMap *HashMap__new(uint8_t log2_size)
     return hashMap;
 }
 
-int8_t HashMap__setItem(HashMap *self, void *key, size_t keySize, void *value)
+int8_t HashMap__setItem(HashMap *self,
+                        void *key,
+                        size_t keySize,
+                        void *value,
+                        size_t valueSize)
 {
     assert(key);
     assert(value);
@@ -259,6 +264,7 @@ int8_t HashMap__setItem(HashMap *self, void *key, size_t keySize, void *value)
     entry->key = key;
     entry->keySize = keySize;
     entry->value = value;
+    entry->valueSize = valueSize;
     sHashMap__keysEntryAdded(self);
 
     return 0;
