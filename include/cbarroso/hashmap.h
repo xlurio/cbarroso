@@ -1,5 +1,5 @@
-#ifndef HASHMAP_H
-#define HASHMAP_H
+#ifndef CBARROSO_HASHMAP_H
+#define CBARROSO_HASHMAP_H
 
 #include <cbarroso/_hash.h>
 #include <stdint.h>

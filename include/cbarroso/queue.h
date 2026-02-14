@@ -1,5 +1,5 @@
-#ifndef TKNSQ_H
-#define TKNSQ_H
+#ifndef CBARROSO_QUEUE_H
+#define CBARROSO_QUEUE_H
 
 #include <stddef.h>
 #include <stdint.h>

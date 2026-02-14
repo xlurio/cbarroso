@@ -30,7 +30,7 @@ To build and run the test suite:
 
 ```bash
 # Configure with testing enabled
-cmake -B build . -DBUILD_TESTING=ON
+cmake -B build . -DCBR_BUILD_TESTING=ON
 
 # Build the library and tests
 cmake --build build

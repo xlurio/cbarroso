@@ -1,5 +1,5 @@
-#ifndef STACK_H
-#define STACK_H
+#ifndef CBARROSO_STACK_H
+#define CBARROSO_STACK_H
 
 #include <stddef.h>
 #include <stdint.h>

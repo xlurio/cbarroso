@@ -1,5 +1,5 @@
-#ifndef SNGLLNKDLIST_H
-#define SNGLLNKDLIST_H
+#ifndef CBARROSO_SNGLLNKDLIST_H
+#define CBARROSO_SNGLLNKDLIST_H
 
 #include <stddef.h>
 #include <stdint.h>

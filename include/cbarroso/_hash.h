@@ -1,5 +1,5 @@
-#ifndef _HASH_H
-#define _HASH_H
+#ifndef CBARROSO_HASH_H
+#define CBARROSO_HASH_H
 
 #include <unistd.h>
 

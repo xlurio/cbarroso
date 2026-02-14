@@ -27,7 +27,7 @@ jobs:
       - name: Configure CMake
         run: |
           cmake -B build \
-            -DBUILD_TESTING=ON \
+            -DCBR_BUILD_TESTING=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_C_COMPILER=$CC
 

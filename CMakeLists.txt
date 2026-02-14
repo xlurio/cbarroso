@@ -6,7 +6,7 @@ project(cbarroso
     LANGUAGES C
 )
 
-option(BUILD_TESTING "Build the testing tree" OFF)
+option(CBR_BUILD_TESTING "Build the testing tree" OFF)
 
 add_library(cbarroso STATIC)
 
@@ -68,7 +68,7 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cbarroso
 )
 
-if(BUILD_TESTING)
+if(CBR_BUILD_TESTING)
     enable_testing()
 
     add_executable(test_hashmap tests/test_hashmap.c)

@@ -1,5 +1,5 @@
-#ifndef TREE_H
-#define TREE_H
+#ifndef CBARROSO_TREE_H
+#define CBARROSO_TREE_H
 
 #include <stddef.h>
 #include "sngllnkdlist.h"
