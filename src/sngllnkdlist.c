@@ -19,7 +19,7 @@ SinglyLinkedListNode *SinglyLinkedListNode__new(void *value)
     return node;
 }
 
-int8_t SinglyLinkedListNode__insert(SinglyLinkedListNode *self, void *value)
+int8_t SinglyLinkedListNode__insertAtTail(SinglyLinkedListNode *self, void *value)
 {
     SinglyLinkedListNode *new_node = SinglyLinkedListNode__new(value);
 

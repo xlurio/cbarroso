@@ -10,7 +10,7 @@ typedef struct SinglyLinkedListNode
 } SinglyLinkedListNode;
 
 SinglyLinkedListNode *SinglyLinkedListNode__new(void *value);
-int8_t SinglyLinkedListNode__insert(SinglyLinkedListNode *self, void *value);
+int8_t SinglyLinkedListNode__insertAtTail(SinglyLinkedListNode *self, void *value);
 void SinglyLinkedListNode__del(SinglyLinkedListNode *self);
 
 #endif

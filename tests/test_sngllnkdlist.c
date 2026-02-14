@@ -10,8 +10,8 @@ TEST(test_sngllnkdlist_create_and_insert)
     int a = 10, b = 20, c = 30;
     SinglyLinkedListNode *head = SinglyLinkedListNode__new(&a);
     ASSERT_NOT_NULL(head, "Node creation failed");
-    ASSERT_EQ(SinglyLinkedListNode__insert(head, &b), CBR_SUCCESS, "Insert failed");
-    ASSERT_EQ(SinglyLinkedListNode__insert(head, &c), CBR_SUCCESS, "Insert failed");
+    ASSERT_EQ(SinglyLinkedListNode__insertAtTail(head, &b), CBR_SUCCESS, "Insert failed");
+    ASSERT_EQ(SinglyLinkedListNode__insertAtTail(head, &c), CBR_SUCCESS, "Insert failed");
 
     int *vals[3];
     SinglyLinkedListNode *cur = head;

@@ -1,18 +1,12 @@
 # cbarroso
 
-A C library providing a high-performance hashmap implementation.
-
-## Features
-
-- **HashMap**: Efficient key-value storage with O(1) average-case lookup
-- **Modern CMake**: Supports both direct integration and system-wide installation
-- **C99 Standard**: Clean, portable C code
+A C library providing a high-performance data structures implementation.
 
 ## Building
 
 ### Prerequisites
 
-- CMake 3.15 or higher
+- CMake 3.10 or higher
 - C99-compatible compiler (GCC, Clang, MSVC, etc.)
 
 ### Build as Static Library
@@ -39,14 +33,11 @@ To build and run the test suite:
 cmake -B build . -DBUILD_TESTING=ON
 
 # Build the library and tests
-cmake --build build --target test_hashmap
+cmake --build build
 
 # Run all tests with CTest
 cd build
 ctest --output-on-failure
-
-# Or run the test executable directly
-./test_hashmap
 ```
 
 For verbose test output:
@@ -87,130 +78,38 @@ add_executable(my_app main.c)
 target_link_libraries(my_app PRIVATE cbarroso::cbarroso)
 ```
 
-## API Reference
+## Features
 
-### HashMap
+The library provides three high-performance data structures:
 
-Create and manage hash maps for efficient key-value storage.
+- **HashMap** - Fast key-value storage with O(1) lookups
+- **SinglyLinkedList** - Simple forward-only linked list
+- **DoublyLinkedList** - Bidirectional linked list with efficient node deletion
 
-### SinglyLinkedList
+## Documentation
 
-Create and manage singly linked lists for generic value storage.
+For detailed API documentation, examples, and usage guides, see the [wiki](wiki/API-Overview.md):
 
-#### Creating a Node
+- **[API Overview](wiki/API-Overview.md)** - Complete guide to all data structures
+- **[HashMap API](wiki/HashMap-API.md)** - Hash map documentation and examples
+- **[SinglyLinkedList API](wiki/SinglyLinkedList-API.md)** - Singly linked list documentation
+- **[DoublyLinkedList API](wiki/DoublyLinkedList-API.md)** - Doubly linked list documentation
 
-```c
-#include <cbarroso/sngllnkdlist.h>
-
-SinglyLinkedListNode *node = SinglyLinkedListNode__new(value);
-```
-
-#### Inserting a Value
-
-```c
-int8_t result = SinglyLinkedListNode__insert(node, value);
-// Returns 0 on success, -1 on error
-```
-
-#### Deleting the List
-
-```c
-SinglyLinkedListNode__del(node);
-```
-
-#### Complete Example
-
-```c
-#include <stdio.h>
-#include <cbarroso/sngllnkdlist.h>
-
-int main(void) {
-    int a = 1, b = 2, c = 3;
-    SinglyLinkedListNode *head = SinglyLinkedListNode__new(&a);
-    if (!head) {
-        fprintf(stderr, "Failed to create node\n");
-        return 1;
-    }
-    SinglyLinkedListNode__insert(head, &b);
-    SinglyLinkedListNode__insert(head, &c);
-
-    // Print values
-    SinglyLinkedListNode *current = head;
-    while (current) {
-        printf("%d\n", *(int *)current->value);
-        current = current->next;
-    }
-
-    // Clean up
-    SinglyLinkedListNode__del(head);
-    return 0;
-}
-```
-
-#### Creating a HashMap
+## Quick Example
 
 ```c
 #include <cbarroso/hashmap.h>
 
-// Create a hashmap with 2^8 = 256 slots
-HashMap *map = HashMap__new(8);
-```
-
-The `log2_size` parameter determines the initial size: `size = 2^log2_size`
-
-#### Setting Values
-
-```c
-char *key = "my_key";
-int value;
-
-int8_t result = HashMap__setItem(map, key, strlen(key), &value);
-// Returns 0 on success, -1 on error
-```
-
-#### Getting Values
-
-```c
-char *key = "my_key";
-void *value_ptr;
-
-int8_t result = HashMap__getItem(map, key, strlen(key), &value_ptr);
-if (result == 0) {
-    int *value = (int *)value_ptr;
-    printf("Value: %d\n", *value);
-}
-// Returns 0 on success, -1 if key not found
-```
-
-#### Complete Example
-
-```c
-#include <stdio.h>
-#include <string.h>
-#include <cbarroso/hashmap.h>
-
 int main(void) {
-    // Create hashmap
     HashMap *map = HashMap__new(8);
-    if (!map) {
-        fprintf(stderr, "Failed to create hashmap\n");
-        return 1;
-    }
-
-    // Store a value
-    int data = 123;
-    if (HashMap__setItem(map, "key1", 4, &data) != 0) {
-        fprintf(stderr, "Failed to set item\n");
-        return 1;
-    }
-
-    // Retrieve the value
+    
+    int value = 42;
+    HashMap__setItem(map, "answer", 6, &value);
+    
     void *result;
-    if (HashMap__getItem(map, "key1", 4, &result) == 0) {
-        printf("Retrieved: %d\n", *(int *)result);
-    }
-
-    // Clean up
+    HashMap__getItem(map, "answer", 6, &result);
+    printf("The answer is %d\n", *(int *)result);
+    
     free(map);
     return 0;
 }

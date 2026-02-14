@@ -13,6 +13,7 @@ add_library(cbarroso STATIC)
 target_sources(cbarroso
     PRIVATE src/hashmap.c
     PRIVATE src/sngllnkdlist.c
+    PRIVATE src/dblylnkdlist.c
     PRIVATE src/_hash.c
 )
 
@@ -76,4 +77,8 @@ if(BUILD_TESTING)
     add_executable(test_sngllnkdlist EXCLUDE_FROM_ALL tests/test_sngllnkdlist.c)
     target_link_libraries(test_sngllnkdlist PRIVATE cbarroso)
     add_test(NAME SinglyLinkedListTests COMMAND test_sngllnkdlist)
+
+    add_executable(test_dblylnkdlist EXCLUDE_FROM_ALL tests/test_dblylnkdlist.c)
+    target_link_libraries(test_dblylnkdlist PRIVATE cbarroso)
+    add_test(NAME DoublyLinkedListTests COMMAND test_dblylnkdlist)
 endif()
