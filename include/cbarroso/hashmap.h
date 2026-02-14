@@ -46,5 +46,6 @@ int8_t HashMap__getItem(HashMap *self,
                         void *key,
                         size_t keySize,
                         void **valueAddr);
+void HashMap__del(HashMap * self);
 
 #endif

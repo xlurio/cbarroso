@@ -93,6 +93,60 @@ target_link_libraries(my_app PRIVATE cbarroso::cbarroso)
 
 Create and manage hash maps for efficient key-value storage.
 
+### SinglyLinkedList
+
+Create and manage singly linked lists for generic value storage.
+
+#### Creating a Node
+
+```c
+#include <cbarroso/sngllnkdlist.h>
+
+SinglyLinkedListNode *node = SinglyLinkedListNode__new(value);
+```
+
+#### Inserting a Value
+
+```c
+int8_t result = SinglyLinkedListNode__insert(node, value);
+// Returns 0 on success, -1 on error
+```
+
+#### Deleting the List
+
+```c
+SinglyLinkedListNode__del(node);
+```
+
+#### Complete Example
+
+```c
+#include <stdio.h>
+#include <cbarroso/sngllnkdlist.h>
+
+int main(void) {
+    int a = 1, b = 2, c = 3;
+    SinglyLinkedListNode *head = SinglyLinkedListNode__new(&a);
+    if (!head) {
+        fprintf(stderr, "Failed to create node\n");
+        return 1;
+    }
+    SinglyLinkedListNode__insert(head, &b);
+    SinglyLinkedListNode__insert(head, &c);
+
+    // Print values
+    SinglyLinkedListNode *current = head;
+    while (current) {
+        printf("%d\n", *(int *)current->value);
+        current = current->next;
+    }
+
+    // Clean up
+    SinglyLinkedListNode__del(head);
+    return 0;
+}
+```
+
 #### Creating a HashMap
 
 ```c

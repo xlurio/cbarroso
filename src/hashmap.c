@@ -280,3 +280,18 @@ int8_t HashMap__getItem(HashMap *self,
 
     return 0;
 }
+
+void HashMap__del(HashMap * self)
+{
+    HashMapEntry **entries = HashMap__getEntries(self);
+        
+        for (size_t i = 0; i < self->nentries; i++)
+        {
+            if (entries[i] != NULL)
+            {
+                free(entries[i]);
+            }
+        }
+        
+        free(self);
+}

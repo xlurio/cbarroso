@@ -1,10 +1,11 @@
 #include <stdint.h>
 #include <unistd.h>
-#include <cbarroso/_hash.h>
 #include <endian.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cbarroso/_hash.h>
+#include <cbarroso/constants.h>
 
 #define ROTATE(x, b) (uint64_t)(((x) << (b)) | ((x) >> (64 - (b))))
 
@@ -35,15 +36,19 @@ static int8_t sInitializeSecret()
 
     if (urandomFile == NULL)
     {
-        fprintf(stderr, "Failed to open '%s'", urandomPath);
-        return -1;
+        fprintf(stderr, "Failed to open '%s'\n", urandomPath);
+        return CBR_ERROR;
     }
 
     sipHashSecret = malloc(sizeof(SipHashSecret));
 
     if (sipHashSecret == NULL)
     {
-        return -1;
+        fprintf(stderr,
+                "Failed to allocate memory for SipHash secret '%s'\n",
+                urandomPath);
+        fclose(urandomFile);
+        return CBR_ERROR;
     }
 
     do
@@ -54,8 +59,10 @@ static int8_t sInitializeSecret()
 
         if (bytesRead < 0)
         {
-            fprintf(stderr, "Failed to read '%s'", urandomPath);
-            return -1;
+            fprintf(stderr,"Failed to read '%s'\n",urandomPath);
+            fclose(urandomFile);
+            free(sipHashSecret);
+            return CBR_ERROR;
         }
 
         secretSize -= bytesRead;
@@ -65,7 +72,7 @@ static int8_t sInitializeSecret()
 
     wasSecretInitialized = 1;
 
-    return 0;
+    return CBR_SUCCESS;
 }
 
 static hash_t sSiphash13(uint64_t k0, uint64_t k1, const void *src, size_t srcSize)
@@ -139,7 +146,7 @@ hash_t hashBuffer(const void *buffer, size_t len)
     {
         if (sInitializeSecret() < 0)
         {
-            fprintf(stderr, "Failed to initialize SipHash-1-3 secret");
+            fprintf(stderr, "Failed to initialize SipHash-1-3 secret\n");
             exit(EXIT_FAILURE);
         }
     }
