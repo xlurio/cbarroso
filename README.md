@@ -91,15 +91,7 @@ The library provides six high-performance data structures:
 
 ## Documentation
 
-For detailed API documentation, examples, and usage guides, see the [wiki](wiki/API-Overview.md):
-
-- **[API Overview](wiki/API-Overview.md)** - Complete guide to all data structures
-- **[HashMap API](wiki/HashMap-API.md)** - Hash map documentation and examples
-- **[SinglyLinkedList API](wiki/SinglyLinkedList-API.md)** - Singly linked list documentation
-- **[DoublyLinkedList API](wiki/DoublyLinkedList-API.md)** - Doubly linked list documentation
-- **[Tree API](wiki/Tree-API.md)** - Tree documentation and examples
-- **[Stack API](wiki/Stack-API.md)** - Stack documentation and examples
-- **[Queue API](wiki/Queue-API.md)** - Queue documentation and examples
+For detailed API documentation, examples, and usage guides, see the [wiki](https://github.com/xlurio/cbarroso/wiki).
 
 ## Quick Example
 
