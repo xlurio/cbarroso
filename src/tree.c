@@ -39,7 +39,7 @@ int8_t TreeNode__insert(TreeNode *self, TreeNode *newChild)
 
     if (self->numOfChildren <= 0)
     {
-        childrenListNode = SinglyLinkedListNode__new(newChild);
+        childrenListNode = SinglyLinkedListNode__new(newChild, sizeof(TreeNode));
 
         if (childrenListNode == NULL)
         {
@@ -51,7 +51,9 @@ int8_t TreeNode__insert(TreeNode *self, TreeNode *newChild)
     }
     else
     {
-        int8_t result = SinglyLinkedListNode__insertAtTail(self->childrenTail, newChild);
+        int8_t result = SinglyLinkedListNode__insertAtTail(self->childrenTail,
+                                                           newChild,
+                                                           sizeof(TreeNode));
 
         if (result == CBR_ERROR)
         {

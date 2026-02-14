@@ -80,13 +80,14 @@ target_link_libraries(my_app PRIVATE cbarroso::cbarroso)
 
 ## Features
 
-The library provides five high-performance data structures:
+The library provides six high-performance data structures:
 
 - **HashMap** - Fast key-value storage with O(1) lookups
 - **SinglyLinkedList** - Simple forward-only linked list
 - **DoublyLinkedList** - Bidirectional linked list with efficient node deletion
 - **Tree** - Generic n-ary tree for hierarchical data structures
 - **Stack** - LIFO data structure with O(1) push and pop operations
+- **Queue** - FIFO data structure with O(1) enqueue and dequeue operations
 
 ## Documentation
 
@@ -98,6 +99,7 @@ For detailed API documentation, examples, and usage guides, see the [wiki](wiki/
 - **[DoublyLinkedList API](wiki/DoublyLinkedList-API.md)** - Doubly linked list documentation
 - **[Tree API](wiki/Tree-API.md)** - Tree documentation and examples
 - **[Stack API](wiki/Stack-API.md)** - Stack documentation and examples
+- **[Queue API](wiki/Queue-API.md)** - Queue documentation and examples
 
 ## Quick Example
 

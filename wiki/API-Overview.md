@@ -90,6 +90,24 @@ Last-In-First-Out (LIFO) data structure for element management.
 
 ---
 
+### [Queue](Queue-API.md)
+First-In-First-Out (FIFO) data structure for managing elements in order.
+
+**Use when you need:**
+- FIFO ordering
+- Task scheduling
+- Message buffering
+- Breadth-first search
+- Request processing
+
+**Key features:**
+- O(1) enqueue and dequeue operations
+- Generic value storage with deep copy
+- Head and tail pointer tracking
+- Size tracking
+
+---
+
 ## Quick Start
 
 ### Installation
@@ -126,6 +144,7 @@ After installation, include the headers:
 #include <cbarroso/dblylnkdlist.h>
 #include <cbarroso/tree.h>
 #include <cbarroso/stack.h>
+#include <cbarroso/queue.h>
 ```
 
 ---
@@ -219,6 +238,7 @@ if (HashMap__getItem(map, "key", 3, &result) == 0) {
 | Bidirectional traversal | DoublyLinkedList | Can move forward and backward |
 | Hierarchical data | Tree | Parent-child relationships |
 | LIFO ordering | Stack | O(1) push/pop with automatic cleanup |
+| FIFO ordering | Queue | O(1) enqueue/dequeue for ordered processing |
 | Delete specific items | DoublyLinkedList or HashMap | O(1) deletion with reference |
 | Minimal memory | SinglyLinkedList | One pointer per node |
 | Unique keys | HashMap | Automatically handles key uniqueness |
@@ -273,6 +293,12 @@ if (HashMap__setItem(map, key, key_size, value) == CBR_SUCCESS) {
 - **Delete**: O(n) where n = number of elements
 - **Memory**: O(n)
 
+### Queue
+- **Enqueue**: O(1)
+- **Dequeue**: O(1)
+- **Delete**: O(n) where n = number of elements
+- **Memory**: O(n)
+
 ---
 
 ## Building and Testing
@@ -297,6 +323,7 @@ ctest --output-on-failure
 - `test_dblylnkdlist` - DoublyLinkedList functionality
 - `test_tree` - Tree functionality
 - `test_stack` - Stack functionality
+- `test_queue` - Queue functionality
 
 ---
 
@@ -307,6 +334,7 @@ ctest --output-on-failure
 - **[DoublyLinkedList API](DoublyLinkedList-API.md)** - Complete DoublyLinkedList documentation
 - **[Tree API](Tree-API.md)** - Complete Tree documentation
 - **[Stack API](Stack-API.md)** - Complete Stack documentation
+- **[Queue API](Queue-API.md)** - Complete Queue documentation
 
 ---
 

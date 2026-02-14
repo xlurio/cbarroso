@@ -7,21 +7,21 @@
 TEST(test_dblylnkdlist_create_node)
 {
     int a = 42;
-    DoublyLinkedListNode *node = DoublyLinkedListNode__new(&a);
+    DoublyLinkedListNode *node = DoublyLinkedListNode__new(&a, sizeof(int));
     ASSERT_NOT_NULL(node, "Node creation failed");
     ASSERT_EQ(*(int *)node->value, 42, "Value incorrect");
     ASSERT(node->prev == NULL, "Prev should be NULL");
     ASSERT(node->next == NULL, "Next should be NULL");
-    free(node);
+    DoublyLinkedListNode__del(node);
 }
 
 TEST(test_dblylnkdlist_insert_at_tail)
 {
     int a = 10, b = 20, c = 30;
-    DoublyLinkedListNode *head = DoublyLinkedListNode__new(&a);
+    DoublyLinkedListNode *head = DoublyLinkedListNode__new(&a, sizeof(int));
     ASSERT_NOT_NULL(head, "Node creation failed");
-    ASSERT_EQ(DoublyLinkedListNode__insertAtTail(head, &b), CBR_SUCCESS, "Insert failed");
-    ASSERT_EQ(DoublyLinkedListNode__insertAtTail(head, &c), CBR_SUCCESS, "Insert failed");
+    ASSERT_EQ(DoublyLinkedListNode__insertAtTail(head, &b, sizeof(int)), CBR_SUCCESS, "Insert failed");
+    ASSERT_EQ(DoublyLinkedListNode__insertAtTail(head, &c, sizeof(int)), CBR_SUCCESS, "Insert failed");
 
     int *vals[3];
     DoublyLinkedListNode *cur = head;
@@ -40,70 +40,38 @@ TEST(test_dblylnkdlist_insert_at_tail)
     ASSERT_EQ(*(int *)cur->prev->prev->value, 10, "Head value incorrect via prev");
     ASSERT(cur->prev->prev->prev == NULL, "Head prev should be NULL");
 
-    cur = head;
-    while (cur) {
-        DoublyLinkedListNode *next = cur->next;
-        free(cur);
-        cur = next;
-    }
+    DoublyLinkedListNode__del(head);
 }
 
-TEST(test_dblylnkdlist_delete_middle_node)
+TEST(test_dblylnkdlist_delete_list)
 {
     int a = 10, b = 20, c = 30;
-    DoublyLinkedListNode *head = DoublyLinkedListNode__new(&a);
-    DoublyLinkedListNode__insertAtTail(head, &b);
-    DoublyLinkedListNode__insertAtTail(head, &c);
+    DoublyLinkedListNode *head = DoublyLinkedListNode__new(&a, sizeof(int));
+    DoublyLinkedListNode__insertAtTail(head, &b, sizeof(int));
+    DoublyLinkedListNode__insertAtTail(head, &c, sizeof(int));
+
+    // Delete entire list from any node
+    DoublyLinkedListNode *result = DoublyLinkedListNode__del(head);
+    ASSERT(result == NULL, "Delete should return NULL");
+}
+
+TEST(test_dblylnkdlist_delete_from_middle)
+{
+    int a = 10, b = 20, c = 30;
+    DoublyLinkedListNode *head = DoublyLinkedListNode__new(&a, sizeof(int));
+    DoublyLinkedListNode__insertAtTail(head, &b, sizeof(int));
+    DoublyLinkedListNode__insertAtTail(head, &c, sizeof(int));
 
     DoublyLinkedListNode *middle = head->next;
+    // Delete entire list from middle node - should traverse back to head
     DoublyLinkedListNode *result = DoublyLinkedListNode__del(middle);
-    
-    ASSERT_NOT_NULL(result, "Should return previous node");
-    ASSERT_EQ(*(int *)result->value, 10, "Should return head node");
-    ASSERT_NOT_NULL(head->next, "Head next should point to third node");
-    ASSERT_EQ(*(int *)head->next->value, 30, "Head next should be third node");
-    ASSERT_EQ(head->next->prev, head, "Third node prev should point to head");
-
-    free(head->next);
-    free(head);
-}
-
-TEST(test_dblylnkdlist_delete_head_node)
-{
-    int a = 10, b = 20;
-    DoublyLinkedListNode *head = DoublyLinkedListNode__new(&a);
-    DoublyLinkedListNode__insertAtTail(head, &b);
-
-    // Delete head node
-    DoublyLinkedListNode *result = DoublyLinkedListNode__del(head);
-    
-    ASSERT_NOT_NULL(result, "Should return next node");
-    ASSERT_EQ(*(int *)result->value, 20, "Should return second node");
-    ASSERT(result->prev == NULL, "New head prev should be NULL");
-
-    free(result);
-}
-
-TEST(test_dblylnkdlist_delete_tail_node)
-{
-    int a = 10, b = 20;
-    DoublyLinkedListNode *head = DoublyLinkedListNode__new(&a);
-    DoublyLinkedListNode__insertAtTail(head, &b);
-
-    DoublyLinkedListNode *tail = head->next;
-    DoublyLinkedListNode *result = DoublyLinkedListNode__del(tail);
-    
-    ASSERT_NOT_NULL(result, "Should return previous node");
-    ASSERT_EQ(*(int *)result->value, 10, "Should return head node");
-    ASSERT(result->next == NULL, "Head next should be NULL");
-
-    free(result);
+    ASSERT(result == NULL, "Delete should return NULL");
 }
 
 TEST(test_dblylnkdlist_delete_single_node)
 {
     int a = 10;
-    DoublyLinkedListNode *node = DoublyLinkedListNode__new(&a);
+    DoublyLinkedListNode *node = DoublyLinkedListNode__new(&a, sizeof(int));
     
     DoublyLinkedListNode *result = DoublyLinkedListNode__del(node);
     ASSERT(result == NULL, "Deleting single node should return NULL");
@@ -120,9 +88,8 @@ int main(void)
     printf("=== DoublyLinkedList Test Suite ===\n\n");
     RUN_TEST(test_dblylnkdlist_create_node);
     RUN_TEST(test_dblylnkdlist_insert_at_tail);
-    RUN_TEST(test_dblylnkdlist_delete_middle_node);
-    RUN_TEST(test_dblylnkdlist_delete_head_node);
-    RUN_TEST(test_dblylnkdlist_delete_tail_node);
+    RUN_TEST(test_dblylnkdlist_delete_list);
+    RUN_TEST(test_dblylnkdlist_delete_from_middle);
     RUN_TEST(test_dblylnkdlist_delete_single_node);
     RUN_TEST(test_dblylnkdlist_delete_null);
 

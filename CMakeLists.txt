@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(cbarroso
-    VERSION 0.5.0
+    VERSION 0.6.0
     DESCRIPTION "C library with hashmap implementation"
     LANGUAGES C
 )
@@ -16,6 +16,8 @@ target_sources(cbarroso
     PRIVATE src/dblylnkdlist.c
     PRIVATE src/tree.c
     PRIVATE src/_hash.c
+    PRIVATE src/stack.c
+    PRIVATE src/queue.c
 )
 
 target_include_directories(cbarroso
@@ -86,4 +88,12 @@ if(BUILD_TESTING)
     add_executable(test_tree EXCLUDE_FROM_ALL tests/test_tree.c)
     target_link_libraries(test_tree PRIVATE cbarroso)
     add_test(NAME TreeTests COMMAND test_tree)
+
+    add_executable(test_stack EXCLUDE_FROM_ALL tests/test_stack.c)
+    target_link_libraries(test_stack PRIVATE cbarroso)
+    add_test(NAME StackTests COMMAND test_stack)
+
+    add_executable(test_queue EXCLUDE_FROM_ALL tests/test_queue.c)
+    target_link_libraries(test_queue PRIVATE cbarroso)
+    add_test(NAME QueueTests COMMAND test_queue)
 endif()

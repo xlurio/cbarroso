@@ -1,10 +1,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <cbarroso/constants.h>
 #include <cbarroso/dblylnkdlist.h>
 
-DoublyLinkedListNode *DoublyLinkedListNode__new(void *value)
+DoublyLinkedListNode *DoublyLinkedListNode__new(void *value, size_t valueSize)
 {
     DoublyLinkedListNode *node = malloc(sizeof(DoublyLinkedListNode));
 
@@ -14,15 +15,27 @@ DoublyLinkedListNode *DoublyLinkedListNode__new(void *value)
         return NULL;
     }
 
-    node->value = value;
+    node->value = malloc(valueSize);
+
+    if (node->value == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for the doubly linked list node value\n");
+        return NULL;
+    }
+
+    memcpy(node->value, value, valueSize);
+
+    node->valueSize = valueSize;
     node->prev = NULL;
     node->next = NULL;
     return node;
 }
 
-int8_t DoublyLinkedListNode__insertAtTail(DoublyLinkedListNode *self, void *value)
+int8_t DoublyLinkedListNode__insertAtTail(DoublyLinkedListNode *self,
+                                          void *value,
+                                          size_t valueSize)
 {
-    DoublyLinkedListNode *new_node = DoublyLinkedListNode__new(value);
+    DoublyLinkedListNode *new_node = DoublyLinkedListNode__new(value, valueSize);
     if (new_node == NULL)
     {
         return CBR_ERROR;
@@ -39,6 +52,7 @@ int8_t DoublyLinkedListNode__insertAtTail(DoublyLinkedListNode *self, void *valu
     return CBR_SUCCESS;
 }
 
+/* Traverse the whole linked list freeing the space allocated */
 DoublyLinkedListNode *DoublyLinkedListNode__del(DoublyLinkedListNode *self)
 {
     if (self == NULL)
@@ -46,25 +60,22 @@ DoublyLinkedListNode *DoublyLinkedListNode__del(DoublyLinkedListNode *self)
         return NULL;
     }
 
-    DoublyLinkedListNode *prev_node = self->prev;
-    DoublyLinkedListNode *next_node = self->next;
-
-    if (prev_node != NULL)
+    DoublyLinkedListNode *head = self;
+    while (head->prev != NULL)
     {
-        prev_node->next = next_node;
+        head = head->prev;
     }
 
-    if (next_node != NULL)
+    DoublyLinkedListNode *current = head;
+    DoublyLinkedListNode *next;
+
+    while (current != NULL)
     {
-        next_node->prev = prev_node;
+        next = current->next;
+        free(current->value);
+        free(current);
+        current = next;
     }
 
-    free(self);
-
-    if (prev_node != NULL)
-    {
-        return prev_node;
-    }
-
-    return next_node;
+    return NULL;
 }

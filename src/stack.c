@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include <cbarroso/constants.h>
 #include <cbarroso/stack.h>
 
@@ -25,6 +26,7 @@ int8_t Stack__push(Stack *self,
     }
 
     memcpy(node->value, value, valueSize);
+    node->valueSize = valueSize;
 
     if (self->stackSize > 0)
         node->next = self->top;
@@ -77,7 +79,6 @@ Stack *Stack__del(Stack *self)
         void *value;
         Stack__pop(self, &value);
         free(value);
-        self->stackSize--;
     }
 
     free(self);

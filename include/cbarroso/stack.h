@@ -7,7 +7,8 @@
 typedef struct StackNode
 {
     void *value;
-    StackNode *next;
+    size_t valueSize;
+    struct StackNode *next;
 } StackNode;
 
 typedef struct Stack
