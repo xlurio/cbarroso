@@ -102,10 +102,10 @@ int main(void) {
     HashMap *map = HashMap__new(8);
     
     int value = 42;
-    HashMap__setItem(map, "answer", 6, &value);
+    HashMap__setItem(map, "answer", 7, &value);
     
     void *result;
-    HashMap__getItem(map, "answer", 6, &result);
+    HashMap__getItem(map, "answer", 7, &result);
     printf("The answer is %d\n", *(int *)result);
     
     free(map);
