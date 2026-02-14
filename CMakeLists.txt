@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(cbarroso
-    VERSION 0.4.0
+    VERSION 0.5.0
     DESCRIPTION "C library with hashmap implementation"
     LANGUAGES C
 )

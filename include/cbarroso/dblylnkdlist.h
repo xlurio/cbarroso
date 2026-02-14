@@ -1,5 +1,5 @@
-#ifndef _DBLLNKDLIST
-#define _DBLLNKDLIST
+#ifndef DBLYLNKDLIST_H
+#define DBLYLNKDLIST_H
 
 #include <stdint.h>
 

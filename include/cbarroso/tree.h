@@ -1,5 +1,5 @@
-#ifndef _DBLLNKDLIST
-#define _DBLLNKDLIST
+#ifndef TREE_H
+#define TREE_H
 
 #include <stddef.h>
 #include "sngllnkdlist.h"

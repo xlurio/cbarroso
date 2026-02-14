@@ -72,6 +72,24 @@ Generic n-ary tree where each node can have multiple children.
 
 ---
 
+### [Stack](Stack-API.md)
+Last-In-First-Out (LIFO) data structure for element management.
+
+**Use when you need:**
+- LIFO ordering
+- Undo/redo functionality
+- Expression evaluation
+- Depth-first search
+- Function call tracking
+
+**Key features:**
+- O(1) push and pop operations
+- Generic value storage with deep copy
+- Automatic memory management
+- Size tracking
+
+---
+
 ## Quick Start
 
 ### Installation
@@ -107,6 +125,7 @@ After installation, include the headers:
 #include <cbarroso/sngllnkdlist.h>
 #include <cbarroso/dblylnkdlist.h>
 #include <cbarroso/tree.h>
+#include <cbarroso/stack.h>
 ```
 
 ---
@@ -199,6 +218,7 @@ if (HashMap__getItem(map, "key", 3, &result) == 0) {
 | Sequential processing | SinglyLinkedList | Simple, efficient forward traversal |
 | Bidirectional traversal | DoublyLinkedList | Can move forward and backward |
 | Hierarchical data | Tree | Parent-child relationships |
+| LIFO ordering | Stack | O(1) push/pop with automatic cleanup |
 | Delete specific items | DoublyLinkedList or HashMap | O(1) deletion with reference |
 | Minimal memory | SinglyLinkedList | One pointer per node |
 | Unique keys | HashMap | Automatically handles key uniqueness |
@@ -247,6 +267,12 @@ if (HashMap__setItem(map, key, key_size, value) == CBR_SUCCESS) {
 - **Delete tree**: O(n) where n = total nodes
 - **Memory**: O(n)
 
+### Stack
+- **Push**: O(1)
+- **Pop**: O(1)
+- **Delete**: O(n) where n = number of elements
+- **Memory**: O(n)
+
 ---
 
 ## Building and Testing
@@ -270,6 +296,7 @@ ctest --output-on-failure
 - `test_sngllnkdlist` - SinglyLinkedList functionality
 - `test_dblylnkdlist` - DoublyLinkedList functionality
 - `test_tree` - Tree functionality
+- `test_stack` - Stack functionality
 
 ---
 
@@ -279,6 +306,7 @@ ctest --output-on-failure
 - **[SinglyLinkedList API](SinglyLinkedList-API.md)** - Complete SinglyLinkedList documentation
 - **[DoublyLinkedList API](DoublyLinkedList-API.md)** - Complete DoublyLinkedList documentation
 - **[Tree API](Tree-API.md)** - Complete Tree documentation
+- **[Stack API](Stack-API.md)** - Complete Stack documentation
 
 ---
 
