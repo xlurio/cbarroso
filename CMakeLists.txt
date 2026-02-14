@@ -71,29 +71,29 @@ install(FILES
 if(BUILD_TESTING)
     enable_testing()
 
-    add_executable(test_hashmap EXCLUDE_FROM_ALL tests/test_hashmap.c)
+    add_executable(test_hashmap tests/test_hashmap.c)
 
     target_link_libraries(test_hashmap PRIVATE cbarroso)
 
     add_test(NAME HashMapTests COMMAND test_hashmap)
 
-    add_executable(test_sngllnkdlist EXCLUDE_FROM_ALL tests/test_sngllnkdlist.c)
+    add_executable(test_sngllnkdlist tests/test_sngllnkdlist.c)
     target_link_libraries(test_sngllnkdlist PRIVATE cbarroso)
     add_test(NAME SinglyLinkedListTests COMMAND test_sngllnkdlist)
 
-    add_executable(test_dblylnkdlist EXCLUDE_FROM_ALL tests/test_dblylnkdlist.c)
+    add_executable(test_dblylnkdlist tests/test_dblylnkdlist.c)
     target_link_libraries(test_dblylnkdlist PRIVATE cbarroso)
     add_test(NAME DoublyLinkedListTests COMMAND test_dblylnkdlist)
 
-    add_executable(test_tree EXCLUDE_FROM_ALL tests/test_tree.c)
+    add_executable(test_tree tests/test_tree.c)
     target_link_libraries(test_tree PRIVATE cbarroso)
     add_test(NAME TreeTests COMMAND test_tree)
 
-    add_executable(test_stack EXCLUDE_FROM_ALL tests/test_stack.c)
+    add_executable(test_stack tests/test_stack.c)
     target_link_libraries(test_stack PRIVATE cbarroso)
     add_test(NAME StackTests COMMAND test_stack)
 
-    add_executable(test_queue EXCLUDE_FROM_ALL tests/test_queue.c)
+    add_executable(test_queue tests/test_queue.c)
     target_link_libraries(test_queue PRIVATE cbarroso)
     add_test(NAME QueueTests COMMAND test_queue)
 endif()
