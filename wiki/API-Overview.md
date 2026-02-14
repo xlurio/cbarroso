@@ -54,6 +54,24 @@ Linked list with bidirectional traversal and individual node deletion.
 
 ---
 
+### [Tree](Tree-API.md)
+Generic n-ary tree where each node can have multiple children.
+
+**Use when you need:**
+- Hierarchical data representation
+- Abstract Syntax Trees (AST)
+- File system structures
+- Organization charts
+- Nested relationships
+
+**Key features:**
+- Arbitrary number of children per node
+- Recursive deletion of entire subtree
+- Generic value storage
+- Children maintained in insertion order
+
+---
+
 ## Quick Start
 
 ### Installation
@@ -88,6 +106,7 @@ After installation, include the headers:
 #include <cbarroso/hashmap.h>
 #include <cbarroso/sngllnkdlist.h>
 #include <cbarroso/dblylnkdlist.h>
+#include <cbarroso/tree.h>
 ```
 
 ---
@@ -179,6 +198,7 @@ if (HashMap__getItem(map, "key", 3, &result) == 0) {
 | Fast key lookups | HashMap | O(1) average lookup time |
 | Sequential processing | SinglyLinkedList | Simple, efficient forward traversal |
 | Bidirectional traversal | DoublyLinkedList | Can move forward and backward |
+| Hierarchical data | Tree | Parent-child relationships |
 | Delete specific items | DoublyLinkedList or HashMap | O(1) deletion with reference |
 | Minimal memory | SinglyLinkedList | One pointer per node |
 | Unique keys | HashMap | Automatically handles key uniqueness |
@@ -220,6 +240,13 @@ if (HashMap__setItem(map, key, key_size, value) == CBR_SUCCESS) {
 - **Traversal**: O(n) (forward or backward)
 - **Memory**: O(n) with 2× pointer overhead
 
+### Tree
+- **Create node**: O(1)
+- **Insert child**: O(1)
+- **Access children**: O(n) where n = number of children
+- **Delete tree**: O(n) where n = total nodes
+- **Memory**: O(n)
+
 ---
 
 ## Building and Testing
@@ -242,6 +269,7 @@ ctest --output-on-failure
 - `test_hashmap` - HashMap functionality
 - `test_sngllnkdlist` - SinglyLinkedList functionality
 - `test_dblylnkdlist` - DoublyLinkedList functionality
+- `test_tree` - Tree functionality
 
 ---
 
@@ -250,6 +278,7 @@ ctest --output-on-failure
 - **[HashMap API](HashMap-API.md)** - Complete HashMap documentation
 - **[SinglyLinkedList API](SinglyLinkedList-API.md)** - Complete SinglyLinkedList documentation
 - **[DoublyLinkedList API](DoublyLinkedList-API.md)** - Complete DoublyLinkedList documentation
+- **[Tree API](Tree-API.md)** - Complete Tree documentation
 
 ---
 

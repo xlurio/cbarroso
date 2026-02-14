@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static int tests_run = 0;
 static int tests_passed = 0;
@@ -48,6 +49,16 @@ static int tests_passed = 0;
             printf("  \u2717 Assertion failed: %s is NULL\n", message); \
             exit(1);                                               \
         }                                                          \
+    } while (0)
+
+#define ASSERT_STR_EQ(a, b, message)                                                           \
+    do                                                                                         \
+    {                                                                                          \
+        if (strcmp((a), (b)) != 0)                                                             \
+        {                                                                                      \
+            printf("  \u2717 Assertion failed: %s (expected '%s', got '%s')\n", message, (b), (a)); \
+            exit(1);                                                                           \
+        }                                                                                      \
     } while (0)
 
 #endif // CBARROSO_TEST_UTILS_H
