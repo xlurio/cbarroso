@@ -1,0 +1,3 @@
+[submodule "external/ccauchy"]
+	path = external/ccauchy
+	url = git@github.com:xlurio/ccauchy.git

@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <cbarroso/dblylnkdlist.h>
 #include <cbarroso/constants.h>
-#include "test_utils.h"
+#include <ccauchy.h>
 
 
 TEST(test_dblylnkdlist_create_node)
@@ -81,30 +81,4 @@ TEST(test_dblylnkdlist_delete_null)
 {
     DoublyLinkedListNode *result = DoublyLinkedListNode__del(NULL);
     ASSERT(result == NULL, "Deleting NULL should return NULL");
-}
-
-int main(void)
-{
-    printf("=== DoublyLinkedList Test Suite ===\n\n");
-    RUN_TEST(test_dblylnkdlist_create_node);
-    RUN_TEST(test_dblylnkdlist_insert_at_tail);
-    RUN_TEST(test_dblylnkdlist_delete_list);
-    RUN_TEST(test_dblylnkdlist_delete_from_middle);
-    RUN_TEST(test_dblylnkdlist_delete_single_node);
-    RUN_TEST(test_dblylnkdlist_delete_null);
-
-    printf("\n=== Test Results ===\n");
-    printf("Tests run: %d\n", tests_run);
-    printf("Tests passed: %d\n", tests_passed);
-
-    if (tests_passed == tests_run)
-    {
-        printf("\n\u2713 All tests passed!\n");
-        return 0;
-    }
-    else
-    {
-        printf("\n\u2717 Some tests failed!\n");
-        return 1;
-    }
 }

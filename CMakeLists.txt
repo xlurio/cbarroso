@@ -71,29 +71,18 @@ install(FILES
 if(CBR_BUILD_TESTING)
     enable_testing()
 
-    add_executable(test_hashmap tests/test_hashmap.c)
-
-    target_link_libraries(test_hashmap PRIVATE cbarroso)
-
-    add_test(NAME HashMapTests COMMAND test_hashmap)
-
-    add_executable(test_sngllnkdlist tests/test_sngllnkdlist.c)
-    target_link_libraries(test_sngllnkdlist PRIVATE cbarroso)
-    add_test(NAME SinglyLinkedListTests COMMAND test_sngllnkdlist)
-
-    add_executable(test_dblylnkdlist tests/test_dblylnkdlist.c)
-    target_link_libraries(test_dblylnkdlist PRIVATE cbarroso)
-    add_test(NAME DoublyLinkedListTests COMMAND test_dblylnkdlist)
-
-    add_executable(test_tree tests/test_tree.c)
-    target_link_libraries(test_tree PRIVATE cbarroso)
-    add_test(NAME TreeTests COMMAND test_tree)
-
-    add_executable(test_stack tests/test_stack.c)
-    target_link_libraries(test_stack PRIVATE cbarroso)
-    add_test(NAME StackTests COMMAND test_stack)
-
-    add_executable(test_queue tests/test_queue.c)
-    target_link_libraries(test_queue PRIVATE cbarroso)
-    add_test(NAME QueueTests COMMAND test_queue)
+    add_executable(test_runner 
+        tests/test_runner.c
+        tests/test_hashmap.c
+        tests/test_sngllnkdlist.c
+        tests/test_dblylnkdlist.c
+        tests/test_tree.c
+        tests/test_stack.c
+        tests/test_queue.c
+    )
+    
+    target_include_directories(test_runner PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/ccauchy/include)
+    target_link_libraries(test_runner PRIVATE cbarroso)
+    
+    add_test(NAME AllTests COMMAND test_runner)
 endif()

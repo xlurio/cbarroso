@@ -1,5 +1,5 @@
 #include <cbarroso/hashmap.h>
-#include "test_utils.h"
+#include <ccauchy.h>
 
 // Test: Create a new HashMap
 TEST(test_hashmap_new)
@@ -505,45 +505,4 @@ TEST(test_hashmap_pointer_key)
     ASSERT_STR_EQ((char *)retrieved, value2, "Pointer key should work");
 
     free(map);
-}
-
-int main(int argc, char **argv)
-{
-    printf("=== HashMap Test Suite ===\n\n");
-
-    RUN_TEST(test_hashmap_new);
-    RUN_TEST(test_hashmap_different_sizes);
-    RUN_TEST(test_hashmap_insert_and_get_single);
-    RUN_TEST(test_hashmap_insert_multiple);
-    RUN_TEST(test_hashmap_string_values);
-    RUN_TEST(test_hashmap_empty_key);
-    RUN_TEST(test_hashmap_long_key);
-    RUN_TEST(test_hashmap_update_value);
-    RUN_TEST(test_hashmap_large_insertions);
-    RUN_TEST(test_hashmap_struct_values);
-    RUN_TEST(test_hashmap_binary_key);
-
-    // Tests for void* key functionality
-    RUN_TEST(test_hashmap_integer_key);
-    RUN_TEST(test_hashmap_float_key);
-    RUN_TEST(test_hashmap_struct_key);
-    RUN_TEST(test_hashmap_mixed_key_types);
-    RUN_TEST(test_hashmap_long_integer_key);
-    RUN_TEST(test_hashmap_complex_binary_key);
-    RUN_TEST(test_hashmap_pointer_key);
-
-    printf("\n=== Test Results ===\n");
-    printf("Tests run: %d\n", tests_run);
-    printf("Tests passed: %d\n", tests_passed);
-
-    if (tests_passed == tests_run)
-    {
-        printf("\n✓ All tests passed!\n");
-        return 0;
-    }
-    else
-    {
-        printf("\n✗ Some tests failed!\n");
-        return 1;
-    }
 }

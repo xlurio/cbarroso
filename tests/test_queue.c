@@ -1,5 +1,5 @@
 #include <cbarroso/queue.h>
-#include "test_utils.h"
+#include <ccauchy.h>
 
 // Test: Create a new Queue
 TEST(test_queue_new)
@@ -275,35 +275,4 @@ TEST(test_queue_alternating_operations)
         free(value);
     }
     free(queue);
-}
-
-int main(void)
-{
-    printf("=== Queue Test Suite ===\n\n");
-    RUN_TEST(test_queue_new);
-    RUN_TEST(test_queue_enqueue_single_int);
-    RUN_TEST(test_queue_enqueue_multiple_ints);
-    RUN_TEST(test_queue_dequeue_single);
-    RUN_TEST(test_queue_dequeue_empty);
-    RUN_TEST(test_queue_fifo_order);
-    RUN_TEST(test_queue_enqueue_strings);
-    RUN_TEST(test_queue_enqueue_structs);
-    RUN_TEST(test_queue_mixed_operations);
-    RUN_TEST(test_queue_large);
-    RUN_TEST(test_queue_alternating_operations);
-
-    printf("\n=== Test Results ===\n");
-    printf("Tests run: %d\n", tests_run);
-    printf("Tests passed: %d\n", tests_passed);
-
-    if (tests_passed == tests_run)
-    {
-        printf("\n\u2713 All tests passed!\n");
-        return 0;
-    }
-    else
-    {
-        printf("\n\u2717 Some tests failed!\n");
-        return 1;
-    }
 }

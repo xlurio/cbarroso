@@ -2,7 +2,7 @@
 #include <string.h>
 #include <cbarroso/tree.h>
 #include <cbarroso/constants.h>
-#include "test_utils.h"
+#include <ccauchy.h>
 
 TEST(test_tree_create_node)
 {
@@ -199,33 +199,4 @@ TEST(test_tree_with_struct_values)
     ASSERT_STR_EQ(child1Data->name, "Bob", "Child1 name incorrect");
     
     TreeNode__del(root);
-}
-
-int main(void)
-{
-    printf("=== Tree Test Suite ===\n\n");
-    
-    RUN_TEST(test_tree_create_node);
-    RUN_TEST(test_tree_create_with_string);
-    RUN_TEST(test_tree_insert_single_child);
-    RUN_TEST(test_tree_insert_multiple_children);
-    RUN_TEST(test_tree_nested_children);
-    RUN_TEST(test_tree_delete_null);
-    RUN_TEST(test_tree_delete_with_children);
-    RUN_TEST(test_tree_with_struct_values);
-    
-    printf("\n=== Test Results ===\n");
-    printf("Tests run: %d\n", tests_run);
-    printf("Tests passed: %d\n", tests_passed);
-    
-    if (tests_passed == tests_run)
-    {
-        printf("\n✓ All tests passed!\n");
-        return 0;
-    }
-    else
-    {
-        printf("\n✗ Some tests failed!\n");
-        return 1;
-    }
 }

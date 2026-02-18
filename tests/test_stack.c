@@ -1,5 +1,5 @@
 #include <cbarroso/stack.h>
-#include "test_utils.h"
+#include <ccauchy.h>
 
 // Test: Create a new Stack
 TEST(test_stack_new)
@@ -372,41 +372,4 @@ TEST(test_stack_deep_copy)
     free(popped);
 
     stack = Stack__del(stack);
-}
-
-int main(void)
-{
-    printf("Running Stack Tests\n");
-    printf("===================\n\n");
-
-    RUN_TEST(test_stack_new);
-    RUN_TEST(test_stack_push_single_int);
-    RUN_TEST(test_stack_push_multiple_ints);
-    RUN_TEST(test_stack_pop_single);
-    RUN_TEST(test_stack_pop_empty);
-    RUN_TEST(test_stack_lifo_order);
-    RUN_TEST(test_stack_strings);
-    RUN_TEST(test_stack_structs);
-    RUN_TEST(test_stack_del_with_elements);
-    RUN_TEST(test_stack_push_after_pop);
-    RUN_TEST(test_stack_large_operations);
-    RUN_TEST(test_stack_alternating_operations);
-    RUN_TEST(test_stack_size_tracking);
-    RUN_TEST(test_stack_different_sizes);
-    RUN_TEST(test_stack_deep_copy);
-
-    printf("\n===================\n");
-    printf("Tests run: %d\n", tests_run);
-    printf("Tests passed: %d\n", tests_passed);
-
-    if (tests_run == tests_passed)
-    {
-        printf("\n✓ All tests passed!\n");
-        return 0;
-    }
-    else
-    {
-        printf("\n✗ Some tests failed!\n");
-        return 1;
-    }
 }

@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <cbarroso/sngllnkdlist.h>
 #include <cbarroso/constants.h>
-#include "test_utils.h"
+#include <ccauchy.h>
 
 
 TEST(test_sngllnkdlist_create_and_insert)
@@ -32,26 +32,4 @@ TEST(test_sngllnkdlist_delete)
     SinglyLinkedListNode *head = SinglyLinkedListNode__new(&a, sizeof(int));
     ASSERT_NOT_NULL(head, "Node creation failed");
     SinglyLinkedListNode__del(head);
-}
-
-int main(void)
-{
-    printf("=== SinglyLinkedList Test Suite ===\n\n");
-    RUN_TEST(test_sngllnkdlist_create_and_insert);
-    RUN_TEST(test_sngllnkdlist_delete);
-
-    printf("\n=== Test Results ===\n");
-    printf("Tests run: %d\n", tests_run);
-    printf("Tests passed: %d\n", tests_passed);
-
-    if (tests_passed == tests_run)
-    {
-        printf("\n\u2713 All tests passed!\n");
-        return 0;
-    }
-    else
-    {
-        printf("\n\u2717 Some tests failed!\n");
-        return 1;
-    }
 }
