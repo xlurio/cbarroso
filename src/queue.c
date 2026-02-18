@@ -80,3 +80,20 @@ int8_t Queue__dequeue(Queue *self, void **valueAddress)
 
     return CBR_SUCCESS;
 }
+
+void Queue__del(Queue *self)
+{
+    if (self == NULL)
+    {
+        return;
+    }
+
+    while (self->numberOfNodes > 0)
+    {
+        void *value;
+        Queue__dequeue(self, &value);
+        free(value);
+    }
+
+    free(self);
+}

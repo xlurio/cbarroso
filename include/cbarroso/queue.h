@@ -21,5 +21,6 @@ typedef struct Queue
 Queue *Queue__new();
 int8_t Queue__enqueue(Queue *self, void *value, size_t valueSize);
 int8_t Queue__dequeue(Queue *self, void **valueAddress);
+void Queue__del(Queue *self);
 
 #endif
