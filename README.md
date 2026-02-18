@@ -113,6 +113,9 @@ int main(void) {
 }
 ```
 
+## Why "cbarroso"
+
+The name **cbarroso** is a tribute to [Inezita Barroso](https://en.wikipedia.org/wiki/Inezita_Barroso)
 
 ## License
 
