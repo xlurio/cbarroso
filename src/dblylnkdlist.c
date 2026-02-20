@@ -7,7 +7,7 @@
 
 DoublyLinkedListNode *DoublyLinkedListNode__new(void *value, size_t valueSize)
 {
-    DoublyLinkedListNode *node = malloc(sizeof(DoublyLinkedListNode));
+    DoublyLinkedListNode *node = calloc(1, sizeof(DoublyLinkedListNode));
 
     if (node == NULL)
     {
@@ -15,7 +15,7 @@ DoublyLinkedListNode *DoublyLinkedListNode__new(void *value, size_t valueSize)
         return NULL;
     }
 
-    node->value = malloc(valueSize);
+    node->value = calloc(1, valueSize);
 
     if (node->value == NULL)
     {
@@ -26,8 +26,6 @@ DoublyLinkedListNode *DoublyLinkedListNode__new(void *value, size_t valueSize)
     memcpy(node->value, value, valueSize);
 
     node->valueSize = valueSize;
-    node->prev = NULL;
-    node->next = NULL;
     return node;
 }
 

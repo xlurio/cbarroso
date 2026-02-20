@@ -216,7 +216,8 @@ HashMap *HashMap__new(uint8_t log2_size)
 
     size_t indicesSize = (size_t)1 << log2_index_bytes;
     size_t entriesSize = sizeof(HashMapEntry) * usable;
-    HashMap *hashMap = malloc(
+    HashMap *hashMap = calloc(
+        1,
         sizeof(HashMap) + indicesSize + entriesSize);
 
     if (hashMap == NULL)
@@ -230,10 +231,6 @@ HashMap *HashMap__new(uint8_t log2_size)
     hashMap->log2_index_bytes = log2_index_bytes;
     // Intialize `indices` as an array of `MKIX_EMPTY`s
     memset(hashMap->indices, MKIX_EMPTY, (size_t)1 << log2_index_bytes);
-    // Intialize `entries` as an array of nulls
-    memset(&hashMap->indices[(size_t)1 << log2_index_bytes],
-           0,
-           sizeof(HashMap) * usable);
 
     return hashMap;
 }
@@ -259,11 +256,11 @@ int8_t HashMap__setItem(HashMap *self,
     ssize_t hashPos = sHashMap__findEmptySlot(self, hash);
     sHashMap__setIndex(self, hashPos, self->nentries);
     HashMapEntry **entries = HashMap__getEntries(self);
-    entries[self->nentries] = malloc(sizeof(HashMapEntry));
+    entries[self->nentries] = calloc(1, sizeof(HashMapEntry));
     HashMapEntry *entry = entries[self->nentries];
     entry->hash = hash;
 
-    entry->key = malloc(keySize);
+    entry->key = calloc(1, keySize);
 
     if (entry->key == NULL)
     {
@@ -273,7 +270,7 @@ int8_t HashMap__setItem(HashMap *self,
 
     memcpy(entry->key, key, keySize);
 
-    entry->value = malloc(valueSize);
+    entry->value = calloc(1, valueSize);
 
     if (entry->value == NULL)
     {
