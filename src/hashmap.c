@@ -1,11 +1,12 @@
 #include <unistd.h>
 #include <stdlib.h>
-#include <cbarroso/_hash.h>
 #include <stdint.h>
-#include <cbarroso/hashmap.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <cbarroso/_hash.h>
+#include <cbarroso/constants.h>
+#include <cbarroso/hashmap.h>
 
 #define MKIX_EMPTY -1
 #define MKIX_DUMMY -2
@@ -250,7 +251,7 @@ int8_t HashMap__setItem(HashMap *self,
     {
         if (sHashMap__insertionResize(self) < 0)
         {
-            return -1;
+            return CBR_ERROR;
         }
     }
 
@@ -261,13 +262,32 @@ int8_t HashMap__setItem(HashMap *self,
     entries[self->nentries] = malloc(sizeof(HashMapEntry));
     HashMapEntry *entry = entries[self->nentries];
     entry->hash = hash;
-    entry->key = key;
+
+    entry->key = malloc(keySize);
+
+    if (entry->key == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for hash map key");
+        return CBR_ERROR;
+    }
+
+    memcpy(entry->key, key, keySize);
+
+    entry->value = malloc(valueSize);
+
+    if (entry->value == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for hash map value");
+        return CBR_ERROR;
+    }
+
+    memcpy(entry->value, value, valueSize);
+
     entry->keySize = keySize;
-    entry->value = value;
     entry->valueSize = valueSize;
     sHashMap__keysEntryAdded(self);
 
-    return 0;
+    return CBR_SUCCESS;
 }
 
 int8_t HashMap__getItem(HashMap *self,
@@ -288,17 +308,17 @@ int8_t HashMap__getItem(HashMap *self,
     return 0;
 }
 
-void HashMap__del(HashMap * self)
+void HashMap__del(HashMap *self)
 {
     HashMapEntry **entries = HashMap__getEntries(self);
-        
-        for (size_t i = 0; i < self->nentries; i++)
+
+    for (size_t i = 0; i < self->nentries; i++)
+    {
+        if (entries[i] != NULL)
         {
-            if (entries[i] != NULL)
-            {
-                free(entries[i]);
-            }
+            free(entries[i]);
         }
-        
-        free(self);
+    }
+
+    free(self);
 }
