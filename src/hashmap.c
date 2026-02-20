@@ -276,6 +276,13 @@ int8_t HashMap__getItem(HashMap *self,
                         void **valueAddr)
 {
     ssize_t index = sHashMap__doLookup(self, key, keySize, hashBuffer(key, keySize));
+
+    if (index == MKIX_EMPTY)
+    {
+        *valueAddr = NULL;
+        return 0;
+    }
+
     *valueAddr = HashMap__getEntries(self)[index]->value;
 
     return 0;
